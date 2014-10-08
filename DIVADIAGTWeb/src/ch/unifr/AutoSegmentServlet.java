@@ -3,7 +3,9 @@ package ch.unifr;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -44,6 +46,8 @@ public class AutoSegmentServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 
+		// read parameters
+		System.out.println("Do post");
 		HashMap<String, List<int[][]>> results = new HashMap<String, List<int[][]>>();	
 		String imageURL = request.getParameter("imageURL");
 		String imageName = request.getParameter("imageName");
@@ -52,21 +56,21 @@ public class AutoSegmentServlet extends HttpServlet {
 		}
 		System.out.println("imageName: " + imageName);
 		System.out.println("DoPost is executed.");
-		
+				
 		// text blocks extraction using projection method
 		Step1Projection projectMethod = new Step1Projection(imageURL);
 		HashMap<String, List<int[][]>> resultsStep1 = projectMethod.getResults();
 	    System.out.println("Text blocks extraction is done.");
 	    
 	    // text lines extraction using Gabor filters
-	    TextLinesExtraction textlinesExtraction = new TextLinesExtraction();
+	    /*TextLinesExtraction textlinesExtraction = new TextLinesExtraction();
 		try {
 			textlinesExtraction.textLinesExtraction();
 		} catch (MatlabConnectionException | MatlabInvocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}*/
+	    
 	    Step2Gabor step2Gabor = new Step2Gabor();
 	    HashMap<String, List<int[][]>> resultsStep2 = step2Gabor.getResults();
 	    results.putAll(resultsStep1);
@@ -75,19 +79,19 @@ public class AutoSegmentServlet extends HttpServlet {
 	    System.out.println("Text lines extraction is done.");
 	    
 	  
-	    MySQLConnection mySQLConnection = new MySQLConnection();
+	    /*MySQLConnection mySQLConnection = new MySQLConnection();
 		try {
 			mySQLConnection.insert(imageName, imageURL);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 	 
 	    response.setContentType("application/json");
 	    response.setCharacterEncoding("UTF-8");
-	    response.getWriter().write(json);
+	    response.getWriter().write(new Gson().toJson(results));
 	}
 
 }

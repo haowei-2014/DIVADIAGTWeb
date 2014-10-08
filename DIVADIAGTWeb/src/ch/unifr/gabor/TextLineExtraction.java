@@ -29,9 +29,9 @@ import ij.*;
  */
 public class TextLineExtraction {
 
-	public String pathName = "/home/weih/workspace/DIVADIAWeb4/DIVADIAGTWeb/WorkData/";
+	public String pathName = "/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/";
 	public String fileName = "GaborOutput.png";
-	public static String originalName = "GaborInput.png";
+	public static String originalName = "d-008.0.1091.205.507.2337.png";
 	
 	public LinkedHashMap<String, Rectangle> patches = new LinkedHashMap<String, Rectangle>();
 	/**
@@ -121,18 +121,25 @@ public class TextLineExtraction {
 				BufferedImage.TYPE_BYTE_GRAY);
 		WritableRaster raster = bufferedImage.getRaster(); 
 		
-		for (int i = 0; i < bufferedImage.getHeight(); i++)
+		for (int i = 0; i < bufferedImage.getHeight(); i++) {
 			for (int j = 0; j < bufferedImage.getWidth(); j++) {
-				// The function "Polygon.contains" has a problem. It does not include some points on the boundary.
+				// The function "Polygon.contains" has a problem. It does not
+				// include some points on the boundary.
 				// Thus, the boundary points should be dealt with additionally.
-/*				if ((p.contains(j + rect.x, i+rect.y) && img.getRaster().getSample(j + rect.x, i+rect.y, 0)==0) 
-						|| boundaryPoints.contains(new Point(j + rect.x, i+rect.y)))*/
-				if (p.contains(j + rect.x, i+rect.y) && img.getRaster().getSample(j + rect.x, i+rect.y, 0)==0)
-				{ 
-					raster.setSample(j, i, 0, 0);
-				} else 
-					raster.setSample(j, i, 0, 255);
-				} 
+				/*
+				 * if ((p.contains(j + rect.x, i+rect.y) &&
+				 * img.getRaster().getSample(j + rect.x, i+rect.y, 0)==0) ||
+				 * boundaryPoints.contains(new Point(j + rect.x, i+rect.y)))
+				 */
+				if (j + rect.x >= 0 && i + rect.y >= 0){
+					if (p.contains(j + rect.x, i + rect.y)
+							&& img.getRaster().getSample(j + rect.x, i + rect.y, 0) == 0) {
+						raster.setSample(j, i, 0, 0);
+					} else
+						raster.setSample(j, i, 0, 255);
+				}
+			}
+		}
 
 		try {
 			File file = new File(pathName + "patch" + index + ".png");

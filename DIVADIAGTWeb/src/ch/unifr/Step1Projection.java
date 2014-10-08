@@ -48,9 +48,9 @@ public class Step1Projection {
 		results = new HashMap<String, List<int[][]>>();	
 		List<int[][]> textBlocksList = new ArrayList<int[][]>();
 		List<int[][]> pageList = new ArrayList<int[][]>();
-/*		textBlocksList.add(new int[][] {{100, 200}, {300, 465}, {800, 900}});
-		textBlocksList.add(new int[][] {{300, 300}, {400, 665}, {1000, 900}});
-		pageList.add(new int[][] {{110, 280}, {800, 440}, {550, 900}});*/
+	//	textBlocksList.add(new int[][] {{100, 200}, {300, 465}, {800, 900}});
+	//	textBlocksList.add(new int[][] {{300, 300}, {400, 665}, {1000, 900}});
+	//	pageList.add(new int[][] {{110, 280}, {800, 440}, {550, 900}});
 		results.put("textBlocks", textBlocksList);	
 		results.put("page", pageList);
 		return results;

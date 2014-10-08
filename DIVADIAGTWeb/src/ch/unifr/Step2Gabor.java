@@ -12,6 +12,10 @@ public class Step2Gabor {
 	public ArrayList<Polygon> polygonsGT = new ArrayList<Polygon>();
 	
 	public HashMap<String, List<int[][]>> getResults(){
+		/*GaborClustering gaborClustering = new GaborClustering();
+		gaborClustering.start("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/d-008.0.1091.205.507.2337.png"
+				, "/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/GaborOutput.png");*/
+		
 		TextLineExtraction tle = new TextLineExtraction();
 		polygonsGT = tle.start();
 		results = new HashMap<String, List<int[][]>>();	

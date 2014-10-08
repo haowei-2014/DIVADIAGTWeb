@@ -1106,13 +1106,23 @@ myApp.controller('simpleController', function ($scope) {
                   },
                   function(responseJson) {    
                 	console.log(responseJson);  
-                	drawAutoResult(responseJson.textBlocks, "textBlocks");
-                	drawAutoResult(responseJson.page, "page");
-                	drawAutoResult(responseJson.textLines, "textLines");
-                	document.getElementById("autoSegmentComment").innerHTML = "";
+                	processResponseJson(responseJson);
                 });  
             });
         });
+        
+        function processResponseJson(responseJson){
+        	if (responseJson.textBlocks){
+        		drawAutoResult(responseJson.textBlocks, "textBlocks");
+        	}
+        	if (responseJson.page){
+        		drawAutoResult(responseJson.page, "page");
+        	}
+        	if (responseJson.textLines){
+        		drawAutoResult(responseJson.textLines, "textLines");
+        	}
+        	view.update();
+        }
         
         $(document).ready(function() {                          
             $('#loadDatabase').click(function() {
@@ -1156,10 +1166,11 @@ myApp.controller('simpleController', function ($scope) {
                     currentDrawPath.strokeColor = 'blue';
                     break;
                 case "page":
-                    currentDrawPath.strokeColor = 'white';
+                    currentDrawPath.strokeColor = 'red';
                     break;
                 case "textLines":
                     currentDrawPath.strokeColor = 'green';
+                    document.getElementById("autoSegmentComment").innerHTML = "";
                     break;
                 }
                 currentDrawPath.strokeWidth = 2;
