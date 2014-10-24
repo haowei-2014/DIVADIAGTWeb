@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Divadia web interface</title>
+
+<!--   <link rel="stylesheet" href="css/docs.css" />-->
+
+
+<!-- Bootstrap -->
+<!--    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">-->
+<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<!--    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">-->
+<link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" type="text/css" href="mystyle.css">
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>-->
+<script src="jquery/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="bootstrap/dist/js/bootstrap.min.js"></script>
+
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="paperjs/js/paper.js"></script>
+
+<!-- Angularjs -->
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>-->
+<script src="angularjs/angular.min.js"></script>
+<script src="utilities.js"></script>
+<script src="simpleController.js"></script>
+</head>
+
+<body ng-controller="simpleController">
+
+
+
+
+
+
+
+      <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li data-toggle="modal" data-target="#myModal"><a href="">Open Image...</a></li>
+                  <li><a href="#" ng-click="importGT()">Read GT...</a></li>
+                  <li><a href="#" ng-click="exportGT()">Save GT...</a></li>
+                  <li class="divider"></li>
+                  <li><a href="#">Exit</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Draw <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li id="drawTextLine" class="item active"><a href="#" ng-click="drawTextLine()">Text line</a></li>
+                  <li><a href="#" ng-click="drawTextBlock()">Text block</a></li>
+                  <li><a href="#" ng-click="drawDecoration()">Decoration</a></li>
+
+                  <li><a href="#" ng-click="drawPage()">Page</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Show <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li id="drawTextLine" class="item active"><a href="#" ng-click="showTextLine()">Text line</a></li>
+                  <li><a href="#" ng-click="showTextBlock()">Text block</a></li>
+                  <li><a href="#" ng-click="showDecoration()">Decoration</a></li>
+
+                  <li><a href="#" ng-click="showPage()">Page</a></li>
+                </ul>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li class="active"><a href="./">Default</a></li>
+              <li><a href="../navbar-static-top/">Static top</a></li>
+              <li><a href="../navbar-fixed-top/">Fixed top</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </div>
+
+
+
+
+
+<!-- modal to choose an image.  -->
+
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Open an image</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please type the URL of the image</p>
+        <input type="text" size="60" ng-model="imageURL"/> 
+        <br>
+        <br>
+        <p>Or browse from your local computer:</p>
+        <input id="myImage" type="file"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="openImage()">Okay</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<h1 align="center">Ground-Truthing Web Interface</h1>
+	<br>
+	<div class="row">
+		<div class="col-xs-9">
+			<!--<div class="paperscript split">
+                <div class="canvas">
+                    <canvas height="800" width="1200" style="background:#e4e1e1; border:1px solid #0000FF;" id="canvas"></canvas>
+                </div>
+            </div>-->
+			<!--                <div id="scroll">-->
+			<canvas height="850" width="1200"
+				style="background: #e4e1e1; border: 1px solid #0000FF;" id="canvas"></canvas>
+			<!--                </div>-->
+			<img class="hidden" id="parzival" src="csg562-022.png" alt="The Scream">
+			<p id='imgName'></p>
+			<p id='imgHeight'></p>
+			<p id='imgWidth'></p>
+		</div>
+		<div class="col-xs-3">
+			<button type="button" class="btn btn-primary btnTop" ng-click="importImg()">Import
+				Img</button>
+			<!-- <input id="myImg" type="file" style="display: none"
+				onchange="angular.element(this).scope().fileNameChanged(event)"> -->
+			<input id="myImg" type="file"
+				style="visibility: hidden; display: none" />
+			<button type="button" class="btn btn-primary btnTop" ng-click="importGT()">Import
+				GT</button>
+			<input id="myInput" type="file"
+				style="visibility: hidden; display: none" />
+			<button type="button" class="btn btn-primary btnTop" ng-click="exportGT()">Export
+				GT</button>
+			<br>
+			<button type="button" id="showInfoButton" class="btn btn-primary btnTop"
+				ng-click="showImgInfo()">Hide Info</button>
+			<button type="button" id="testButton" class="btn btn-primary btnTop" ng-click="test()">test</button>
+			<br>
+			<button id="autoSegment" type="button" class="btn btn-primary" >AutoSegment</button>
+			<button id="loadDatabase" type="button" class="btn btn-primary" >loadDatabase</button>
+			<br>
+			<progress value="22" max="100"></progress>
+			<p id="autoSegmentComment" style="color:red;"></p>
+			<br> 
+			<br> 
+			<p style="font-size: 20px;">Pleae select a working mode:</p>
+			<label class="radio-inline"> <input type="radio"
+				ng-model="mode" value="draw" ng-change="modeChange()">Draw
+			</label> <label class="radio-inline"> <input type="radio"
+				ng-model="mode" value="modify" ng-change="modeChange()">Modify
+			</label> <label class="radio-inline"> <input type="radio"
+				ng-model="mode" value="display" ng-change="modeChange()">Display
+			</label> <br> <br>
+			<form id="drawForm">
+				<div class="radio">
+					<label> <input type="radio" ng-model="color" value="green">Text
+						line
+					</label>
+				</div>
+				<div class="radio">
+					<label> <input type="radio" ng-model="color" value="blue">Text
+						block
+					</label>
+				</div>
+				<div class="radio">
+					<label> <input type="radio" ng-model="color"
+						value="magenta">Decoration
+					</label>
+				</div>
+				<div class="radio">
+					<label> <input type="radio" ng-model="color" value="orange">Comment
+					</label>
+				</div>
+				<div class="radio">
+					<label> <input type="radio" ng-model="color" value="white">Page
+					</label>
+				</div>
+			</form>
+			Region: <select ng-model="myRegion"
+				ng-options="region.name for region in regions"></select><br> <br>
+			Shape: <select ng-model="myShape"
+				ng-options="shape.name for shape in shapes"></select><br>
+			<form id="modifyForm" style="display: none">
+				<button type="button" class="btn btn-primary"
+					ng-click="removePolygon()">Remove</button>
+				<br /> <br /> <br /> <br /> <br />
+			</form>
+			<!--            <form id="displayForm" style="display:none">
+                <input type="checkbox" class="center" ng-model="displayText" ng-change="displayChange()">Text block
+                <br/>
+                <input type="checkbox" class="center" ng-model="displayTextLine" ng-change="displayChange()">Text line
+                <br/>
+                <input type="checkbox" class="center" ng-model="displayDecoration" ng-change="displayChange()">Decoration
+                <br/>
+                <input type="checkbox" class="center" ng-model="displayComment" ng-change="displayChange()">Comment
+                <br/>
+                <input type="checkbox" class="center" ng-model="displayPage" ng-change="displayChange()">Page
+            </form>-->
+			<!-- <form id="displayForm" style="display: none">
+				<div class="checkbox">
+					<label> <input type="checkbox" ng-model="displayText"
+						ng-change="displayChange()">Text line
+					</label>
+				</div>
+				<div class="checkbox">
+					<label> <input type="checkbox" ng-model="displayTextLine"
+						ng-change="displayChange()">Text block
+					</label>
+				</div>
+				<div class="checkbox">
+					<label> <input type="checkbox" ng-model="displayDecoration"
+						ng-change="displayChange()">Decoration
+					</label>
+				</div>
+				<div class="checkbox">
+					<label> <input type="checkbox" ng-model="displayComment"
+						ng-change="displayChange()">Comment
+					</label>
+				</div>
+				<div class="checkbox">
+					<label> <input type="checkbox" ng-model="displayPage"
+						ng-change="displayChange()">Page
+					</label>
+				</div>
+			</form> -->
+			<!--    <button type="button" class="btn btn-primary" ng-click="zoomin()">Zoom in</button>  -->
+			<!--    <input type="button" value="Show Dialog" onclick="$('#myInput').click();" /> -->
+			<br>
+			<p>Comment:</p>
+			<textarea class="form-control" ng-model="comment"
+				ng-change="editComment()"></textarea>
+			<br> <br>
+			<p>Mouse position:</p>
+			<p id='mousePosition'></p>
+			<br> <br>
+			<!--
+            <button type="button" class="btn btn-primary" ng-click="testZoomin()">Zoom in</button>
+           <br> -->
+			
+
+			<p>The pixel you are clicking is:</p>
+			<p id='xyClick'></p>
+			<br>
+			<p>The points in the current polygon are:</p>
+			<ul>
+				<li ng-repeat="xy in polygon">x = {{xy.x}}, y = {{xy.y}}</li>
+			</ul>
+		</div>
+	</div>
+</body>
+
+</html>
