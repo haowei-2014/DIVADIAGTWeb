@@ -25,9 +25,8 @@ myApp.controller('simpleController', function ($scope) {
             raster.position = view.center;
 
             project.activeLayer.scale(zoom);
-            /*$scope.polygon = [];
-            $scope.mode = 'draw';
-            $scope.color = 'green';
+            $scope.polygon = [];
+            color = 'green';
             $scope.regions = [
                 {
                     name: 'text line',
@@ -64,11 +63,11 @@ myApp.controller('simpleController', function ($scope) {
             $scope.displayTextLine = true;
             $scope.displayDecoration = true;
             $scope.displayComment = true;
-            $scope.displayPage = true;*/
+            $scope.displayPage = true;
             $scope.$apply();
             currentDrawPath = new Path();
-            currentDrawPath.strokeColor = $scope.color;
-            currentDrawPath.strokeWidth = 2;
+            currentDrawPath.strokeColor = color;
+            currentDrawPath.strokeWidth = 4;  // 2
             currentDrawPathLastPoint = null;
             fromRectangle = null;
             opacityPath = 0.1;
@@ -79,8 +78,11 @@ myApp.controller('simpleController', function ($scope) {
             mousePosition = $("#mousePosition");
             srcImage = null;
 
+            modeModify = false;
+            modeDraw = false;
             currentModify = null;
-            currentModifyPts = [];
+            previousModify = new Path();
+            currentModifyPts = []; // currentModifyPts contains all vertexes on the currently modifying polygon
             currentModifyPt = null;
             currentModifyPtCircle = null;
             currentModifyPtIndex = 0;
@@ -91,16 +93,18 @@ myApp.controller('simpleController', function ($scope) {
             };
 
             colorText = new Color(0, 0, 1);
-            colorTextLine = new Color(0, 0.5019607843137255, 0);
-            colorDecoration = new Color(1, 0, 1);
+    //        colorTextLine = new Color(0, 0.5019607843137255, 0);
+            colorTextLine = new Color(1,0,0);
+    //        colorDecoration = new Color(1, 0, 1);
+            colorDecoration = new Color(0, 1, 0);
             colorComment = new Color(1, 0.6470588235294118, 0);
             colorPage = new Color(1, 1, 1);
 
             showInfo = true;
             $(document).ready(function () {
-                $("#imgName").html("Name: " + imgName);
-                $("#imgWidth").html("Width: " + imgWidth + " pixels");
-                $("#imgHeight").html("Height: " + imgHeight + " pixels");
+                $("#imgName").html("Name: " + imgName + ". ");
+                $("#imgWidth").html("Width: " + imgWidth + " pixels. ");
+                $("#imgHeight").html("Height: " + imgHeight + " pixels. ");
             });
 
             singleClick = true;
@@ -108,7 +112,14 @@ myApp.controller('simpleController', function ($scope) {
             drag = false;
             hasLastChange = false;
             
+            drawRegionGlyph = document.getElementById("drawTextLineGlyph");
+            drawShapeGlyph = document.getElementById("drawPolygonGlyph");
+            shape = "polygon";
             showTextLineFlag = false;
+            showTextBlockFlag = false;
+            showDecorationFlag = false;
+            showCommentFlag = false;
+            showPageFlag = false;
         }
 
         //    view.onFrame = function (event) {
@@ -147,57 +158,11 @@ myApp.controller('simpleController', function ($scope) {
                 drag = false;
             }
             lastClick = t;
-            switch ($scope.mode) {
-            case "display":
-                modifyOrDisplay(event);
-                break;
-            case "draw":
-                draw(event);
-                break;
-            case "modify":
-                modifyOrDisplay(event);
-                break;
+            if (!modeModify){
+                if (singleClick || doubleClick)
+                    draw(event);
             }
         }
-
-
-        function modifyOrDisplay(event) {
-            // select the topmost polygon
-            if (singleClick && (($scope.mode == "modify") || ($scope.mode == "display"))) {
-                var selectedCandidates = [];
-                var layerChildren = project.activeLayer.children;
-                for (var i = 0; i < layerChildren.length; i++) {
-                    if ((layerChildren[i].className == "Path") && layerChildren[i].contains(event.point)) {
-                        selectedCandidates.push(layerChildren[i]);
-                    }
-                }
-                if (selectedCandidates.length == 1) {
-                    updateCurrentPolygonInfo(selectedCandidates[0]);
-                } else if (selectedCandidates.length == 2) {
-                    for (var i = 0; i < selectedCandidates.length; i++) {
-
-                        if (!selectedCandidates[i].strokeColor.equals(colorPage)) {
-                            updateCurrentPolygonInfo(selectedCandidates[i]);
-                        }
-                    }
-                } else {
-                    for (var i = 0; i < selectedCandidates.length; i++) {
-                        if (selectedCandidates[i].strokeColor.equals(colorTextLine)) {
-                            updateCurrentPolygonInfo(selectedCandidates[i]);
-                        }
-                    }
-                }
-                $scope.comments = currentModify.data.comments;
-                $scope.$apply();
-                console.log(currentModify.data.shape);
-            }
-            if (drag && ($scope.mode == "modify" || $scope.mode == "display") && (currentModify != null)) {
-                currentModify.fillColor = 'red';
-                currentModify.opacity = opacityPath;
-            }
-        }
-
-
         function draw(event) {
             // calculate the postion of the pixel respect to the top-left corner of the image.
             //           console.log(raster.bounds.x);
@@ -215,11 +180,12 @@ myApp.controller('simpleController', function ($scope) {
             // update the point information of the polygon
             if (xClick < 0 || xClick >= imgWidth || yClick < 0 || yClick >= imgHeight) {
                 $(document).ready(function () {
-                    $("#xyClick").html("Out of the image!");
+                    $("#xyClick").html("Out of the image! ");
                 });
             } else if (singleClick) {
+                modeDraw = true;
                 if (pathFinished) {
-                    if ($scope.myShape.name == "polygon") {
+                    if (shape == "polygon") {
                         currentDrawPath = new Path();
                         currentDrawPath.add(event.point);
                         currentDrawPathLastPoint = new Point(xClick, yClick);
@@ -235,7 +201,7 @@ myApp.controller('simpleController', function ($scope) {
                         currentDrawPath.data.shape = "rectangle";
                         $scope.polygon = [];
                     }
-                    currentDrawPath.strokeColor = $scope.color;
+                    currentDrawPath.strokeColor = color;
                     currentDrawPath.strokeWidth = 2;
                     pathFinished = false;
                 } else {
@@ -243,7 +209,7 @@ myApp.controller('simpleController', function ($scope) {
                         currentDrawPath.add(event.point);
                         currentDrawPathLastPoint = new Point(xClick, yClick);
                         $(document).ready(function () {
-                            $("#xyClick").html("x: " + xClick + ", y: " + yClick);
+                            $("#xyClick").html("x: " + xClick + ", y: " + yClick + ". ");
                         });
                         $scope.polygon.push({
                             x: xClick,
@@ -267,7 +233,7 @@ myApp.controller('simpleController', function ($scope) {
                         currentDrawPath.add(new Point(xShow, event.point.y));
 
                         currentDrawPath.data.shape = "rectangle";
-                        currentDrawPath.strokeColor = $scope.color;
+                        currentDrawPath.strokeColor = color;
                         currentDrawPath.strokeWidth = 2;
                         currentDrawPath.closed = true;
                         pathFinished = true;
@@ -301,50 +267,48 @@ myApp.controller('simpleController', function ($scope) {
             if (doubleClick && currentDrawPath.data.shape == "polygon") {
                 currentDrawPath.closed = true;
                 pathFinished = true;
+                modeDraw = false;
                 currentDrawPathLastPoint = null;
                 if (xmlDoc == null)
                     initDom();
                 updateDOMDraw();
-                //                currentDrawPath.onClick = function (event) {
-                //                    updateCurrentPolygonInfo(this);
-                //                }
-                //currentDrawPath.onMouseLeave = function (event) {}              
             }
             $scope.$apply();
         }
 
-        function updateCurrentPolygonInfo(pathSelected) {
-            if (currentModify != null) {
-                currentModify.fullySelected = false;
-                currentModify.fillColor = null;
-                currentModify.opacity = 1;
-            }
-            pathSelected.fullySelected = true;
-            pathSelected.fillColor = 'red';
-            pathSelected.opacity = opacityPath;
-
-            if ((currentModify != null) && (currentModify.id != pathSelected.id) && ($scope.mode == "modify")) {
-                updateDOMModify();
-            }
-
-            currentModify = pathSelected;
-            if ($scope.mode == 'modify') {
-                var currentModifyPtsLength = currentModify.segments.length;
-                if (currentModifyPts.length != 0)
-                    currentModifyPts = [];
-                for (var i = 0; i < currentModifyPtsLength; i++) {
-                    currentModifyPts.push(currentModify.segments[i].point);
+        function updateCurrentModifyInfo(currentModify) {
+            // previousModify is not highlighted anymore.
+            previousModify.fullySelected = false;
+            previousModify.fillColor = null;
+            previousModify.opacity = 1;
+            // if the polygon is text line, decoration, or comment, highlight it,
+            // because highlighting page or text block will sometimes make the broswer dead.
+            if (currentModify != null && modeModify) {
+                if (currentModify.strokeColor.equals(colorTextLine) ||
+                    currentModify.strokeColor.equals(colorDecoration) ||
+                    currentModify.strokeColor.equals(colorComment)) {
+                    currentModify.fullySelected = true;
+                    currentModify.fillColor = 'red';
+                    currentModify.opacity = opacityPath;
                 }
             }
-            //         $("#id").html(currentModify.id);
+
+            previousModify = currentModify;
+            currentModifyPtsLength = currentModify.segments.length;
+            if (currentModifyPts.length != 0)
+                currentModifyPts = [];
+            for (var i = 0; i < currentModifyPtsLength; i++) {
+                currentModifyPts.push(currentModify.segments[i].point);
+            }
         }
 
 
         // if you use the modify mode and insert a point, do it and update the current polygon information 
         tool.onMouseDown = function (event) {
-            if (($scope.mode == 'modify') && (currentModifyInfo.type == "insert") && (currentModifyPt != null)) {
+            if ((currentModifyInfo.type == "insert") && (modeModify)) {
                 currentModify.insert(currentModifyInfo.currentModifyPtIndex + 1, event.point);
-                updateCurrentPolygonInfo(currentModify);
+                updateCurrentModifyInfo(currentModify);
+                updateDOMModify();
             }
         }
 
@@ -353,7 +317,7 @@ myApp.controller('simpleController', function ($scope) {
             if (currentModifyPtCircle != null)
                 currentModifyPtCircle.remove();
             // if modify point exists, check its type and the modify it.
-            if (($scope.mode == 'modify') && (currentModifyPt != null)) {
+            if (modeModify) {
                 if (currentModifyInfo.type == "modify") {
                     if (currentModify.data.shape == "polygon")
                         currentModify.segments[currentModifyInfo.currentModifyPtIndex].point = event.point;
@@ -376,12 +340,8 @@ myApp.controller('simpleController', function ($scope) {
                 } else {
                     currentModify.segments[currentModifyInfo.currentModifyPtIndex + 1].point = event.point;
                 }
-                updateCurrentPolygonInfo(currentModify);
+                updateDOMModify();
             } else { // pan the image
-                if (($scope.mode == "modify" || $scope.mode == "display") && (currentModify != null)) {
-                    currentModify.fillColor = null;
-                    currentModify.opacity = 1;
-                }
                 document.getElementById("canvas").style.cursor = "all-scroll";
                 var vector = event.delta;
                 project.activeLayer.position = new Point(project.activeLayer.position.x + vector.x,
@@ -450,108 +410,88 @@ myApp.controller('simpleController', function ($scope) {
             hasLastChange = true;
         }
 
-
-
-
         tool.onMouseMove = function (event) {
-            mousePosition.html("x: " + Math.round(event.point.x) + ", y: " + Math.round(event.point.y));
-
-            searchPath(event);
-
             // there are two types of modification: modify the existing corners of the polygon,
             // or insert a point within the existing boundary. Both are to be done with drag.
-            if (($scope.mode == 'modify') && (currentModify != null)) {
-                //      if (currentModify != null) {
-                currentModifyPt = null;
-                var distanceCursorToCorner = 100000;
-                var cornerFound = false;
-                var indexClosest, indexSegment;
-                var perpendicularInfo = null;
-                var distanceCursorToBacksegment, distanceCursorToForesegment;
-
-                // check the corners of the polygon, to see if any one is close enough to the cursor
-                for (var i = 0; i < currentModifyPts.length; i++) {
-                    var distanceCursorToCornerI = lineDistance(event.point, currentModifyPts[i]);
-                    //   console.log("enough");
-                    if (distanceCursorToCornerI < distanceCursorToCorner) {
-                        distanceCursorToCorner = distanceCursorToCornerI;
-                        indexClosest = i
-                    }
-                }
-                if (distanceCursorToCorner < 20) {
-                    currentModifyPtCircle = new Path.Circle({
-                        center: [currentModifyPts[indexClosest].x, currentModifyPts[indexClosest].y],
-                        radius: 3
-                    });
-                    currentModifyPtCircle.strokeColor = 'yellow';
-                    currentModifyPtCircle.fillColor = 'yellow';
-                    currentModifyPtCircle.removeOnMove();
-
-                    currentModifyPt = new Point(currentModifyPts[indexClosest].x, currentModifyPts[indexClosest].y);
-                    currentModifyInfo.currentModifyPt = currentModifyPt;
-                    currentModifyInfo.type = "modify";
-                    currentModifyInfo.currentModifyPtIndex = indexClosest;
-                    cornerFound = true;
-                }
-
-
-
-                // if no corner of the polygon is selected, check if the cursor is close enough to any boundary
-                if (!cornerFound) {
-                    if (indexClosest != 0)
-                        distanceCursorToBacksegment = pointLineDistance(currentModifyPts[indexClosest], currentModifyPts[indexClosest - 1], event.point);
-                    else
-                        distanceCursorToBacksegment = pointLineDistance(currentModifyPts[0], currentModifyPts[currentModifyPts.length - 1], event.point);
-
-                    if (indexClosest != (currentModifyPts.length - 1))
-                        distanceCursorToForesegment = pointLineDistance(currentModifyPts[indexClosest], currentModifyPts[indexClosest + 1], event.point);
-                    else
-                        distanceCursorToForesegment = pointLineDistance(currentModifyPts[indexClosest], currentModifyPts[0], event.point);
-
-                    if (distanceCursorToBacksegment != null && distanceCursorToForesegment != null) {
-                        if (distanceCursorToBacksegment.distance < distanceCursorToForesegment.distance) {
-                            if (distanceCursorToBacksegment.distance < 10) {
-                                currentModifyPt = new Point(distanceCursorToBacksegment.x, distanceCursorToBacksegment.y);
-                                if (indexClosest == 0)
-                                    currentModifyInfo.currentModifyPtIndex = currentModifyPts.length - 1;
-                                else
-                                    currentModifyInfo.currentModifyPtIndex = indexClosest - 1;
-                            }
-                        } else {
-                            if (distanceCursorToForesegment.distance < 20) {
-                                currentModifyPt = new Point(distanceCursorToForesegment.x, distanceCursorToForesegment.y);
-                                currentModifyInfo.currentModifyPtIndex = indexClosest;
-                            }
-                        }
-                    } else if (distanceCursorToBacksegment == null && distanceCursorToForesegment != null) {
-                        if (distanceCursorToForesegment.distance < 20) {
-                            currentModifyPt = new Point(distanceCursorToForesegment.x, distanceCursorToForesegment.y);
-                            currentModifyInfo.currentModifyPtIndex = indexClosest;
-                        }
-                    } else if (distanceCursorToBacksegment != null && distanceCursorToForesegment == null) {
-                        if (distanceCursorToBacksegment.distance < 20) {
-                            currentModifyPt = new Point(distanceCursorToBacksegment.x, distanceCursorToBacksegment.y);
-                            if (indexClosest == 0)
-                                currentModifyInfo.currentModifyPtIndex = currentModifyPts.length - 1;
-                            else
-                                currentModifyInfo.currentModifyPtIndex = indexClosest - 1;
+            mousePosition.html("x: " + Math.round(event.point.x) + ", y: " + Math.round(event.point.y));
+            searchPath(event);
+            if (!modeDraw)
+                searchCurrentModifyPt(event);             
+        }
+        
+        function searchCurrentModifyPt(event) {
+            currentModifyPtCircle = new Path.Circle({
+                center: new Point(0, 0),
+                radius: 3,
+                fillColor: 'yellow'
+            });  
+            currentModifyPtCircle.removeOnMove();
+            var layerChildren = project.activeLayer.children;
+            var nearestDistance = 100000;
+            for (var i = 0; i < layerChildren.length; i++) {
+                console.log();
+                if (layerChildren[i].className == "Path") {
+                    // search among paths that are not a single point, drawn by users, and already closed.
+                    if (layerChildren[i].segments.length > 1 && 
+                        layerChildren[i].strokeColor && 
+                        layerChildren[i].closed) {
+                        var currentModifyPtTmp = layerChildren[i].getNearestPoint(event.point);
+                        var nearestDistanceTmp = lineDistance(event.point, currentModifyPtTmp);
+                        if (nearestDistanceTmp < nearestDistance) {
+                            nearestDistance = nearestDistanceTmp;
+                            currentModifyPt = currentModifyPtTmp;
+                            currentModify = layerChildren[i];
                         }
                     }
-                    if (currentModifyPt != null) {
-                        currentModifyPtCircle = new Path.Circle({
-                            center: [currentModifyPt.x, currentModifyPt.y],
-                            radius: 3
-                        });
-                        currentModifyPtCircle.strokeColor = 'yellow';
-                        currentModifyPtCircle.fillColor = 'yellow';
-                        currentModifyPtCircle.removeOnMove();
-                        currentModifyInfo.currentModifyPt = currentModifyPt;
-                        currentModifyInfo.type = "insert";
-                    }
                 }
-                //       }
             }
-            //        console.log(currentModifyPt);
+            if (nearestDistance < 20) {
+                modeModify = true;
+                updateCurrentModifyInfo(currentModify);
+                // find the nearest vertex to the found point, if they are close enough,
+                // reset the found point to the vertex.
+                var p2pDistance = 10000;
+                var cornerFound = false;
+                for (var i = 0; i < currentModifyPtsLength; i++) {
+                    var p2pDistanceTmp = lineDistance(currentModifyPt, currentModifyPts[i]);
+                    if (p2pDistanceTmp < 20 && p2pDistanceTmp < p2pDistance){
+                        p2pDistance = p2pDistanceTmp;
+                        currentModifyPt = currentModifyPts[i];
+                        currentModifyInfo.currentModifyPt = currentModifyPt;
+                        currentModifyInfo.type = "modify";
+                        currentModifyInfo.currentModifyPtIndex = i;
+                        cornerFound = true;
+                    }
+                }
+                if (!cornerFound) {
+                    for (var i = 0; i < currentModifyPtsLength; i++) {
+                        var j = i+1;
+                        if (i == (currentModifyPtsLength-1))
+                            j = 0;
+                        var path = new Path.Rectangle(currentModifyPts[i], currentModifyPts[j]);
+                        if (path.contains(currentModifyPt)){
+                            currentModifyInfo.currentModifyPtIndex = i;
+                            currentModifyInfo.currentModifyPt = currentModifyPt;
+                            currentModifyInfo.type = "insert";
+                            path.remove();
+                            break;
+                        }
+                        path.remove();
+                    }                    
+                }
+                // make the yellow circle centered at the currentModifyPt 
+                currentModifyPtCircle.position = currentModifyPt;      
+                if (currentModify != previousModify)
+                     updateCurrentModifyInfo(currentModify);
+            } else {
+                if (previousModify != null) {
+                    previousModify.fullySelected = false;
+                    previousModify.fillColor = null;
+                    previousModify.opacity = 1;
+                }
+                modeModify = false;
+            }           
+            view.draw();
         }
 
 
@@ -659,24 +599,18 @@ myApp.controller('simpleController', function ($scope) {
                 view.update();
             });
 
+        $scope.test = function () {
+            var path = new Path();
+            path.strokeColor = 'black';
+            path.add(new Point(30, 75));
+            path.add(new Point(30, 25));
+            path.add(new Point(80, 25));
+            path.add(new Point(80, 75));
+            path.closed = true;
 
-        $scope.testZoomin = function () {
-
-            //     alert("click test");
-
-            var scaleFactor = 1.5;
-            zoom = zoom * scaleFactor;
-            project.activeLayer.scale(scaleFactor);
-            myCanvas.width *= scaleFactor;
-            myCanvas.height *= scaleFactor;
-            raster.position = new Point(myCanvas.offsetLeft + myCanvas.offsetWidth / 2, myCanvas.offsetTop + myCanvas.offsetHeight / 2);
-            view.draw();
+            
+            alert(path.getOffsetOf(new Point(80, 25)));
         }
-
-        /*$scope.test = function () {
-
-  
-        }*/
 
 
         $scope.removePolygon = function () {
@@ -692,67 +626,8 @@ myApp.controller('simpleController', function ($scope) {
             currentModify.remove();
         }
 
-
-        $scope.modeChange = function () {
-            if ($scope.mode == 'draw') {
-                document.getElementById("drawForm").style.display = "";
-                document.getElementById("modifyForm").style.display = "none";
-                document.getElementById("displayForm").style.display = "none";
-            } else if ($scope.mode == 'modify') {
-                document.getElementById("drawForm").style.display = "none";
-                document.getElementById("modifyForm").style.display = "";
-                document.getElementById("displayForm").style.display = "none";
-            } else {
-                document.getElementById("drawForm").style.display = "none";
-                document.getElementById("modifyForm").style.display = "none";
-                document.getElementById("displayForm").style.display = "";
-            }
-        }
-
-
-        $scope.displayChange = function () {
-            //       console.log(project.activeLayer.children);
-            var layerChildren = project.activeLayer.children;
-            for (var i = 0; i < layerChildren.length; i++) {
-                if (layerChildren[i].className == "Path") {
-                    if (layerChildren[i].strokeColor.equals(colorTextLine)) {
-                        if ($scope.displayTextLine)
-                            layerChildren[i].visible = true;
-                        else
-                            layerChildren[i].visible = false;
-                    }
-                    if (layerChildren[i].strokeColor.equals(colorText)) {
-                        if ($scope.displayText)
-                            layerChildren[i].visible = true;
-                        else
-                            layerChildren[i].visible = false;
-                    }
-                    if (layerChildren[i].strokeColor.equals(colorDecoration)) {
-                        if ($scope.displayDecoration)
-                            layerChildren[i].visible = true;
-                        else
-                            layerChildren[i].visible = false;
-                    }
-                    if (layerChildren[i].strokeColor.equals(colorComment)) {
-                        if ($scope.displayComment)
-                            layerChildren[i].visible = true;
-                        else
-                            layerChildren[i].visible = false;
-                    }
-                    if (layerChildren[i].strokeColor.equals(colorPage)) {
-                        if ($scope.displayPage)
-                            layerChildren[i].visible = true;
-                        else
-                            layerChildren[i].visible = false;
-                    }
-                }
-            }
-            view.draw();
-        }
-
-
         $scope.editComments = function () {
-            console.log($scope.comments);
+            /*console.log($scope.comments);
 
             var page = xmlDoc.getElementsByTagName("Page")[0];
             var textRegions = page.childNodes;
@@ -767,74 +642,161 @@ myApp.controller('simpleController', function ($scope) {
                     console.log("Found it!");
                     textRegions[i].setAttribute("comments", $scope.comments);
                 }
-            }
+            }*/
         }
-
 
         $scope.drawTextLine = function () {
-            $(document).ready(function () {
-            	$scope.color = 'green';
-            	
-            });
-        }
+            	color = 'green';
+                drawRegionGlyph.className = "hidden";
+            	document.getElementById("drawTextLineGlyph").className = "glyphicon glyphicon-ok";
+                drawRegionGlyph = document.getElementById("drawTextLineGlyph");
+        }      
         
         $scope.drawTextBlock = function () {
-            $(document).ready(function () {
-            	$scope.color = 'blue';
-            });
+            	color = 'blue';
+                drawRegionGlyph.className = "hidden";
+            	document.getElementById("drawTextBlockGlyph").className = "glyphicon glyphicon-ok";
+                drawRegionGlyph = document.getElementById("drawTextBlockGlyph");
         }
         
         $scope.drawDecoration = function () {
-            $(document).ready(function () {
-            	$scope.color = 'magenta';
-            });
+            	color = 'magenta';
+                drawRegionGlyph.className = "hidden";
+            	document.getElementById("drawDecorationGlyph").className = "glyphicon glyphicon-ok";
+                drawRegionGlyph = document.getElementById("drawDecorationGlyph");
         }
         
-        
+        $scope.drawComment = function () {
+            	color = 'orange';
+                drawRegionGlyph.className = "hidden";
+            	document.getElementById("drawCommentGlyph").className = "glyphicon glyphicon-ok";
+                drawRegionGlyph = document.getElementById("drawCommentGlyph");
+        }
         
         $scope.drawPage = function () {
-            $(document).ready(function () {
-            	$scope.color = 'white';
-            });
+            	color = 'white';
+                drawRegionGlyph.className = "hidden";
+            	document.getElementById("drawPageGlyph").className = "glyphicon glyphicon-ok";
+                drawRegionGlyph = document.getElementById("drawPageGlyph");
+        }
+        
+        $scope.drawPolygon = function () {
+            	shape = "polygon";
+                drawShapeGlyph.className = "hidden";
+            	document.getElementById("drawPolygonGlyph").className = "glyphicon glyphicon-ok";
+                drawShapeGlyph = document.getElementById("drawPolygonGlyph");
+        }
+        
+        $scope.drawRectangle = function () {
+            	shape = 'rectangle';
+                drawShapeGlyph.className = "hidden";
+            	document.getElementById("drawRectangleGlyph").className = "glyphicon glyphicon-ok";
+                drawShapeGlyph = document.getElementById("drawRectangleGlyph");
         }
         
         $scope.showTextLine = function () {
-        	showTextLineFlag = !showTextLineFlag;
+            if (showTextLineFlag){
+                document.getElementById("showTextLineGlyph").className = "glyphicon glyphicon-ok";
+            }
+            else
+                document.getElementById("showTextLineGlyph").className = "hidden";
             var layerChildren = project.activeLayer.children;
             for (var i = 0; i < layerChildren.length; i++) {
-                if (layerChildren[i].className == "Path") {
+                if (layerChildren[i].className == "Path" && layerChildren[i].strokeColor != null) {
                     if (layerChildren[i].strokeColor.equals(colorTextLine)) {
-                        if (showTextLineFlag){
+                        if (showTextLineFlag)
                             layerChildren[i].visible = true;
-                            document.getElementById("MyElement").className = "item active";}
                         else
-                        {
                             layerChildren[i].visible = false;
-                            document.getElementById("MyElement").className = "item inactive";}
                     }
                 }
             }
             view.draw();
+            showTextLineFlag = !showTextLineFlag;
         }
         
         $scope.showTextBlock = function () {
-            $(document).ready(function () {
-            	
-            });
+            if (showTextBlockFlag){
+                document.getElementById("showTextBlockGlyph").className = "glyphicon glyphicon-ok";
+            }
+            else
+                document.getElementById("showTextBlockGlyph").className = "hidden";
+            var layerChildren = project.activeLayer.children;
+            for (var i = 0; i < layerChildren.length; i++) {
+                if (layerChildren[i].className == "Path" && layerChildren[i].strokeColor != null) {
+                    if (layerChildren[i].strokeColor.equals(colorText)) {
+                        if (showTextBlockFlag)
+                            layerChildren[i].visible = true;
+                        else
+                            layerChildren[i].visible = false;
+                    }
+                }
+            }
+            view.draw();
+            showTextBlockFlag = !showTextBlockFlag;
         }
         
         $scope.showDecoration = function () {
-            $(document).ready(function () {
-            	
-            });
+            if (showDecorationFlag){
+                document.getElementById("showDecorationGlyph").className = "glyphicon glyphicon-ok";
+            }
+            else
+                document.getElementById("showDecorationGlyph").className = "hidden";
+            var layerChildren = project.activeLayer.children;
+            for (var i = 0; i < layerChildren.length; i++) {
+                if (layerChildren[i].className == "Path" && layerChildren[i].strokeColor != null) {
+                    if (layerChildren[i].strokeColor.equals(colorDecoration)) {
+                        if (showDecorationFlag)
+                            layerChildren[i].visible = true;
+                        else
+                            layerChildren[i].visible = false;
+                    }
+                }
+            }
+            view.draw();
+            showDecorationFlag = !showDecorationFlag;
         }
         
-        
+        $scope.showComment = function () {
+            if (showCommentFlag){
+                document.getElementById("showCommentGlyph").className = "glyphicon glyphicon-ok";
+            }
+            else
+                document.getElementById("showCommentGlyph").className = "hidden";
+            var layerChildren = project.activeLayer.children;
+            for (var i = 0; i < layerChildren.length; i++) {
+                if (layerChildren[i].className == "Path" && layerChildren[i].strokeColor != null) {
+                    if (layerChildren[i].strokeColor.equals(colorComment)) {
+                        if (showCommentFlag)
+                            layerChildren[i].visible = true;
+                        else
+                            layerChildren[i].visible = false;
+                    }
+                }
+            }
+            view.draw();
+            showCommentFlag = !showCommentFlag;
+        }
         
         $scope.showPage = function () {
-            $(document).ready(function () {
-            	
-            });
+            if (showPageFlag){
+                document.getElementById("showPageGlyph").className = "glyphicon glyphicon-ok";
+            }
+            else
+                document.getElementById("showPageGlyph").className = "hidden";
+            var layerChildren = project.activeLayer.children;
+            for (var i = 0; i < layerChildren.length; i++) {
+                if (layerChildren[i].className == "Path" && layerChildren[i].strokeColor != null) {
+                    if (layerChildren[i].strokeColor.equals(colorPage)) {
+                        if (showPageFlag)
+                            layerChildren[i].visible = true;
+                        else
+                            layerChildren[i].visible = false;
+                    }
+                }
+            }
+            view.draw();
+            showPageFlag = !showPageFlag;
         }
     
         // import the ground truth
@@ -977,8 +939,10 @@ myApp.controller('simpleController', function ($scope) {
                 var fileToLoad = event.target.files[0];
                 var fileReader = new FileReader();
                 fileReader.onload = function (event) {
-                	srcImage = event.target.result;
+                	document.getElementById("parzival").src = event.target.result;
                 	imgName = fileToLoad.name;
+                    $('#myModal').modal('hide');
+                    init();
                 };
                 fileReader.readAsDataURL(fileToLoad);
                 //       var fileText = fileReader.result;
@@ -1007,9 +971,7 @@ myApp.controller('simpleController', function ($scope) {
             	}
             	img.src= $scope.imageURL;
         	} else {
-        		document.getElementById("parzival").src = srcImage;
-        		console.log(srcImage);
-                init();
+        		
         	}
         }
 
@@ -1043,13 +1005,16 @@ myApp.controller('simpleController', function ($scope) {
                 // assign color to different classes
                 switch (textRegions[i].getAttribute("type")) {
                 case "textline":
-                    currentDrawPath.strokeColor = 'green';
+                 //   currentDrawPath.strokeColor = 'green';
+                    currentDrawPath.strokeColor = 'red';
                     break;
                 case "decoration":
-                    currentDrawPath.strokeColor = 'magenta';
+               //     currentDrawPath.strokeColor = 'magenta';
+                    currentDrawPath.strokeColor = 'green';    
                     break;
                 case "comment":
-                    currentDrawPath.strokeColor = 'orange';
+                //    currentDrawPath.strokeColor = 'orange';
+                    currentDrawPath.strokeColor = 'magenta';    
                     break;
                 case "text":
                     currentDrawPath.strokeColor = 'blue';
@@ -1058,7 +1023,7 @@ myApp.controller('simpleController', function ($scope) {
                     currentDrawPath.strokeColor = 'white';
                     break;
                 }
-                currentDrawPath.strokeWidth = 2;
+                currentDrawPath.strokeWidth = 10; //2
                 currentDrawPath.data.idXML = textRegions[i].getAttribute("id");
                 currentDrawPath.data.comments = textRegions[i].getAttribute("comments");
                 currentDrawPath.closed = true;
@@ -1105,6 +1070,7 @@ myApp.controller('simpleController', function ($scope) {
                 }*/
 
             }
+            view.draw();
         }
 
 
@@ -1161,7 +1127,7 @@ myApp.controller('simpleController', function ($scope) {
                 var xShow = Math.round(fromRectangle.x * zoom + raster.bounds.x);
                 var yShow = Math.round(fromRectangle.y * zoom + raster.bounds.y);
                 var searchingRectangle = new Path.Rectangle(new Point(xShow, yShow), event.point);
-                searchingRectangle.strokeColor = $scope.color;
+                searchingRectangle.strokeColor = color;
                 searchingRectangle.strokeWidth = 2;
                 searchingRectangle.removeOnMove();
             } else if (currentDrawPath.data.shape == "polygon" && currentDrawPathLastPoint) {
@@ -1225,7 +1191,7 @@ myApp.controller('simpleController', function ($scope) {
         
         $(document).ready(function() {                          
             $('#loadDatabase').click(function() {
-            	document.getElementById("autoSegmentComment").innerHTML = "test one";    
+            	document.getElementById("autoSegmentComment").innerHTML = "Loading from the database!";    
             	$.post('GetImageServlet', 
                         {
                       	imageName:imgName
@@ -1278,7 +1244,22 @@ myApp.controller('simpleController', function ($scope) {
         	}
         }
         
-        
+        $scope.selectTextBlock = function () {
+        	$scope.drawRectangle();
+        	$scope.drawTextBlock();
+        	
+        	document.getElementById("autoSegmentComment").innerHTML = "Please wait for a few seconds!";
+        	var imageUrl = document.getElementById("parzival").src;      
+            $.post('AutoSegmentServlet', 
+              {
+            	imageName:imgName,
+            	imageURL:imageUrl
+              },
+              function(responseJson) {    
+            	console.log(responseJson);  
+            	processResponseJson(responseJson);
+            }); 
+        }
       
     };
 });

@@ -30,8 +30,9 @@ import ij.*;
 public class TextLineExtraction {
 
 	public String pathName = "/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/";
-	public String fileName = "GaborOutput.png";
-	public static String originalName = "d-008.0.1091.205.507.2337.png";
+	public String fileName = "GaborOutput_0.png";
+//	public static String originalName = "d-008.0.1091.205.507.2337.png";
+	public static String originalName = "d-008.1.368.200.484.2360.png";
 	
 	public LinkedHashMap<String, Rectangle> patches = new LinkedHashMap<String, Rectangle>();
 	/**
@@ -174,7 +175,7 @@ public class TextLineExtraction {
 		}
 		
 		// draw the separating points and rectangles wrapping the polygons and then create an image for show
-		BufferedImage imgShow = new BufferedImage(img.getWidth(), img.getHeight(),
+		/*BufferedImage imgShow = new BufferedImage(img.getWidth(), img.getHeight(),
 				BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = imgShow.createGraphics();	
 		g2d.drawImage(img, 0, 0, null);
@@ -209,7 +210,7 @@ public class TextLineExtraction {
 			ImageIO.write(img, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	public void linkCCs(String pathName, String originalName, BufferedImage img){

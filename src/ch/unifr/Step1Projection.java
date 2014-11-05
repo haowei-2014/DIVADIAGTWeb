@@ -14,6 +14,8 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import sun.misc.BASE64Decoder;
+import ch.unifr.textblock.Block;
+import ch.unifr.textblock.BlockRetriever;
 
 import com.google.gson.Gson;
 
@@ -45,14 +47,20 @@ public class Step1Projection {
 	}
 	
 	public HashMap<String, List<int[][]>> getResults(){
+		ArrayList<Block> blockList = BlockRetriever.start(image);
 		results = new HashMap<String, List<int[][]>>();	
 		List<int[][]> textBlocksList = new ArrayList<int[][]>();
-		List<int[][]> pageList = new ArrayList<int[][]>();
-	//	textBlocksList.add(new int[][] {{100, 200}, {300, 465}, {800, 900}});
-	//	textBlocksList.add(new int[][] {{300, 300}, {400, 665}, {1000, 900}});
-	//	pageList.add(new int[][] {{110, 280}, {800, 440}, {550, 900}});
+		
+		for (int i = 0; i < blockList.size(); i++){
+			textBlocksList.add(new int[][] {
+				{blockList.get(i).x, blockList.get(i).y}, 
+				{blockList.get(i).x + blockList.get(i).width, blockList.get(i).y}, 
+				{blockList.get(i).x + blockList.get(i).width, blockList.get(i).y + blockList.get(i).height},
+				{blockList.get(i).x, blockList.get(i).y + blockList.get(i).height}});
+		}
+
+	//	textBlocksList.add(new int[][] {{100, 300}, {400, 665}, {1000, 900}});
 		results.put("textBlocks", textBlocksList);	
-		results.put("page", pageList);
 		return results;
 	}
 	

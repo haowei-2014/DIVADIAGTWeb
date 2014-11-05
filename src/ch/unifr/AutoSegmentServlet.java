@@ -71,10 +71,10 @@ public class AutoSegmentServlet extends HttpServlet {
 			e.printStackTrace();
 		}*/
 	    
-	    Step2Gabor step2Gabor = new Step2Gabor();
-	    HashMap<String, List<int[][]>> resultsStep2 = step2Gabor.getResults();
+	    /*Step2Gabor step2Gabor = new Step2Gabor();
+	    HashMap<String, List<int[][]>> resultsStep2 = step2Gabor.getResults();*/
 	    results.putAll(resultsStep1);
-	    results.putAll(resultsStep2);
+	//    results.putAll(resultsStep2);
 	    String json = new Gson().toJson(results);
 	    System.out.println("Text lines extraction is done.");
 	    

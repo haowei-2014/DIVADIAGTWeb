@@ -113,6 +113,8 @@ public class DrawGT {
 			Polygon adjustedPolygon = CommonFunctions.adjustPolygon(allBlobs
 					.get(i).getOuterContour());
 			adjustedPolygon.translate(horizontalOffset + 1, verticalOffset + 1); // -1 is the error of ijblob.
+//			adjustedPolygon.translate(1091, 205); // move to the coordinates on the original image
+			adjustedPolygon.translate(368, 200); // move to the coordinates on the original image
 			adjustedPolygon = adjustPolygon(adjustedPolygon);
 			polygonsGT.add(adjustedPolygon);
 		}
@@ -126,5 +128,4 @@ public class DrawGT {
 		ArrayList<Polygon> polygonsGT = drawGT.start();
 		System.out.println("Done!");
 	}
-
 }
