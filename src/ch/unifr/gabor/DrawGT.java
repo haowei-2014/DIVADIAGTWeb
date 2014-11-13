@@ -30,7 +30,7 @@ public class DrawGT {
 	 * @param polygon
 	 * @return
 	 */
-	public Polygon adjustPolygon(Polygon polygon) {
+	public static Polygon adjustPolygon(Polygon polygon) {
 		ArrayList<Point> points = new ArrayList<Point>();
 		int numberPoints = polygon.npoints;
 		for (int i = 0; i < numberPoints; i++) {
@@ -70,7 +70,7 @@ public class DrawGT {
 				}
 			}
 		}
-		int interval = 7; // pick up points every interval points
+		int interval = 10; // pick up points every interval points
 		int newNumberPoints = (numberPoints - 1) / interval + 1; // number of boundary points on the new polygon
 		int[] xNewPoints = new int[(numberPoints - 1) / interval + 1];
 		int[] yNewPoints = new int[(numberPoints - 1) / interval + 1];
@@ -84,11 +84,61 @@ public class DrawGT {
 		}
 		return new Polygon(xNewPoints, yNewPoints, newNumberPoints);
 	}
+	
+	// This method is to avoid 2 polygons (upper and bottom ones) that intersect. It lifts the intersecting 
+	// vertexes of the upper polygon,
+	// and lowers the intersecting vertexes of the bottom polygon.
+	public static void separatePolygonsGT (ArrayList<Polygon> polygonsGT){
+		for (int i = 0; i < polygonsGT.size(); i++) {
+			Polygon polygon1 = polygonsGT.get(i);
+			for (int j = i+1; j < polygonsGT.size(); j++){
+				Polygon polygon2 = polygonsGT.get(j);
+				if (polygon1.getBounds().y < polygon2.getBounds().y)
+					separateTwoPolygons(polygon1, polygon2);
+				else
+					separateTwoPolygons(polygon2, polygon1);
+			}
+		}
+	}
+	
+	// This method is to do concrete separation between two polygons if they intersect.
+	public static void separateTwoPolygons (Polygon polygon1, Polygon polygon2){
+		int[] xpoints1 = polygon1.xpoints;
+		int[] ypoints1 = polygon1.ypoints;
+		int[] xpoints2 = polygon2.xpoints;
+		int[] ypoints2 = polygon2.ypoints;
+		boolean hasIntersection = true;
+		int countIteration = 0;
+		
+		while (hasIntersection) {
+			countIteration++;
+			if (countIteration == 10)
+				return;
+			hasIntersection = false;
+			Point p;
+			for (int i = 0; i < polygon1.npoints; i++) {
+				p = new Point(polygon1.xpoints[i], polygon1.ypoints[i]);
+				if (polygon2.contains(p)) {
+					ypoints1[i] -= 2;  // lift the vertex
+					hasIntersection = true;
+				}
+			}
+			polygon1 = new Polygon(xpoints1, ypoints1, polygon1.npoints); 
+			for (int i = 0; i < polygon2.npoints; i++) {
+				p = new Point(polygon2.xpoints[i], polygon2.ypoints[i]);
+				if (polygon1.contains(p)) {
+					ypoints2[i] += 2;  // lower the vertex
+					hasIntersection = true;
+				}
+			}
+			polygon2 = new Polygon(xpoints2, ypoints2, polygon2.npoints); 
+		}
+	}
 
 	public ArrayList<Polygon> start() {
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File(this.pathName + "linking.png"));
+			img = ImageIO.read(new File(this.pathName + "SegLinkCCsV2.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -96,7 +146,7 @@ public class DrawGT {
 		ImagePlus imp = new ImagePlus("test", img);
 		ManyBlobs allBlobs = new ManyBlobs(imp); // Extended ArrayList
 		allBlobs.findConnectedComponents(); // Start the Connected Component
-		allBlobs = allBlobs.filterBlobs(100, 100000, Blob.GETENCLOSEDAREA);
+		allBlobs = allBlobs.filterBlobs(300, 100000, Blob.GETENCLOSEDAREA);
 		System.out.println("AllBlobs size: " + allBlobs.size());
 
 		BufferedImage original = null;
@@ -114,10 +164,11 @@ public class DrawGT {
 					.get(i).getOuterContour());
 			adjustedPolygon.translate(horizontalOffset + 1, verticalOffset + 1); // -1 is the error of ijblob.
 //			adjustedPolygon.translate(1091, 205); // move to the coordinates on the original image
-			adjustedPolygon.translate(368, 200); // move to the coordinates on the original image
+//			adjustedPolygon.translate(422, 412); // move to the coordinates on the original image
 			adjustedPolygon = adjustPolygon(adjustedPolygon);
 			polygonsGT.add(adjustedPolygon);
 		}
+		separatePolygonsGT (polygonsGT);
 		CommonFunctions.drawBoundaries(pathName, original, null, polygonsGT, null, "segmentation1.png");
 		return polygonsGT;
 	}

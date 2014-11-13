@@ -50,7 +50,14 @@ public class AutoSegmentServlet extends HttpServlet {
 		System.out.println("Do post");
 		HashMap<String, List<int[][]>> results = new HashMap<String, List<int[][]>>();	
 		String imageURL = request.getParameter("imageURL");
-		String imageName = request.getParameter("imageName");
+		String imageName = request.getParameter("imageName");		
+		int top = Integer.parseInt(request.getParameter("top"));
+		int bottom = Integer.parseInt(request.getParameter("bottom"));
+		int left = Integer.parseInt(request.getParameter("left"));
+		int right = Integer.parseInt(request.getParameter("right"));
+		int linkingRectWidth = Integer.parseInt(request.getParameter("linkingRectWidth"));
+		int linkingRectHeight = Integer.parseInt(request.getParameter("linkingRectHeight"));
+				
 		if (imageURL == null){
 			System.out.println("imageURL is null.");
 		}
@@ -59,7 +66,8 @@ public class AutoSegmentServlet extends HttpServlet {
 				
 		// text blocks extraction using projection method
 		Step1Projection projectMethod = new Step1Projection(imageURL);
-		HashMap<String, List<int[][]>> resultsStep1 = projectMethod.getResults();
+		projectMethod.cropTextBlock(top, bottom, left, right);
+//		HashMap<String, List<int[][]>> resultsStep1 = projectMethod.getResults();
 	    System.out.println("Text blocks extraction is done.");
 	    
 	    // text lines extraction using Gabor filters
@@ -71,10 +79,10 @@ public class AutoSegmentServlet extends HttpServlet {
 			e.printStackTrace();
 		}*/
 	    
-	    /*Step2Gabor step2Gabor = new Step2Gabor();
-	    HashMap<String, List<int[][]>> resultsStep2 = step2Gabor.getResults();*/
-	    results.putAll(resultsStep1);
-	//    results.putAll(resultsStep2);
+	    Step2Gabor step2Gabor = new Step2Gabor();
+	    HashMap<String, List<int[][]>> resultsStep2 = step2Gabor.getResults(left, top, linkingRectWidth, linkingRectHeight);
+	//    results.putAll(resultsStep1);
+	    results.putAll(resultsStep2);
 	    String json = new Gson().toJson(results);
 	    System.out.println("Text lines extraction is done.");
 	    

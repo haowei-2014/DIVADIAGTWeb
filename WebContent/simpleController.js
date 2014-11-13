@@ -26,7 +26,7 @@ myApp.controller('simpleController', function ($scope) {
 
             project.activeLayer.scale(zoom);
             $scope.polygon = [];
-            color = 'green';
+            color = 'red';
             $scope.regions = [
                 {
                     name: 'text line',
@@ -96,9 +96,9 @@ myApp.controller('simpleController', function ($scope) {
     //        colorTextLine = new Color(0, 0.5019607843137255, 0);
             colorTextLine = new Color(1,0,0);
     //        colorDecoration = new Color(1, 0, 1);
-            colorDecoration = new Color(0, 1, 0);
-            colorComment = new Color(1, 0.6470588235294118, 0);
-            colorPage = new Color(1, 1, 1);
+            colorDecoration = new Color(0, 0.5019607843137255, 0);
+            colorComment = new Color(0.5019607843137255, 0, 0.5019607843137255);
+            colorPage = new Color(0, 1, 1);
 
             showInfo = true;
             $(document).ready(function () {
@@ -115,11 +115,24 @@ myApp.controller('simpleController', function ($scope) {
             drawRegionGlyph = document.getElementById("drawTextLineGlyph");
             drawShapeGlyph = document.getElementById("drawPolygonGlyph");
             shape = "polygon";
-            showTextLineFlag = false;
-            showTextBlockFlag = false;
-            showDecorationFlag = false;
-            showCommentFlag = false;
-            showPageFlag = false;
+            showTextLineFlag = true;
+            showTextBlockFlag = true;
+            showDecorationFlag = true;
+            showCommentFlag = true;
+            showPageFlag = true;
+            document.getElementById("showTextLineGlyph").className = "glyphicon glyphicon-ok";
+            document.getElementById("showTextBlockGlyph").className = "glyphicon glyphicon-ok";
+            document.getElementById("showDecorationGlyph").className = "glyphicon glyphicon-ok";
+            document.getElementById("showCommentGlyph").className = "glyphicon glyphicon-ok";
+            document.getElementById("showPageGlyph").className = "glyphicon glyphicon-ok";
+            
+            autoTextline = false;
+            autoSplit = false;
+            splitPolygon = [];
+            currentSplitPolygon = null;
+            $scope.linkingRectWidth = 60;
+            $scope.linkingRectHeight = 20;
+            $scope.$apply();
         }
 
         //    view.onFrame = function (event) {
@@ -163,6 +176,7 @@ myApp.controller('simpleController', function ($scope) {
                     draw(event);
             }
         }
+        
         function draw(event) {
             // calculate the postion of the pixel respect to the top-left corner of the image.
             //           console.log(raster.bounds.x);
@@ -182,7 +196,17 @@ myApp.controller('simpleController', function ($scope) {
                 $(document).ready(function () {
                     $("#xyClick").html("Out of the image! ");
                 });
-            } else if (singleClick) {
+            } else if (autoSplit && singleClick) {
+            	findSplitPolygon(event);
+            	if (splitPolygon.length == 0)
+            		alert ("Please put the cursor inside a text line region!");
+            	else {
+            		autoSplitPolygon(splitPolygon, xClick, yClick);
+            		autoSplit = false;
+            		document.getElementById("canvas").style.cursor = "auto";
+            	}
+            } 
+            else if(singleClick) {
                 modeDraw = true;
                 if (pathFinished) {
                     if (shape == "polygon") {
@@ -257,7 +281,14 @@ myApp.controller('simpleController', function ($scope) {
                         if (xmlDoc == null)
                             initDom();
                         updateDOMDraw();
+                        // send ajax to server to extract text lines. Number 17 is the pixels to pad the image.
+                        if (autoTextline){
+                        	autoExtractTextLines (fromRectangle.y-17, yClick+17, fromRectangle.x-17, xClick+17);
+                        	autoTextline = false; 
+                        	document.getElementById("canvas").style.cursor = "auto";
+                        }
                         fromRectangle = null;
+                        modeDraw = false;
                     }
 
                 }
@@ -274,6 +305,27 @@ myApp.controller('simpleController', function ($scope) {
                 updateDOMDraw();
             }
             $scope.$apply();
+        }
+        
+        function findSplitPolygon (event){
+        	splitPolygon = [];
+        	var layerChildren = project.activeLayer.children;
+            for (var i = 0; i < layerChildren.length; i++) {
+            	if (layerChildren[i].className == "Path" && layerChildren[i].strokeColor != null) {
+                    if (layerChildren[i].strokeColor.equals(colorTextLine)) {
+                        if (layerChildren[i].contains(event.point)) {
+                        	for (var j = 0; j < layerChildren[i].segments.length; j++){                      		
+                        		var xTmp = Math.round((layerChildren[i].segments[j].point.x - raster.bounds.x) / zoom);
+                                var yTmp = Math.round((layerChildren[i].segments[j].point.y - raster.bounds.y) / zoom);                               
+                        		splitPolygon.push({x:xTmp,
+                        			y:yTmp});
+                        	}
+                        	currentSplitPolygon = layerChildren[i];
+                        	return 0;
+                        }
+                    }
+                }
+            }
         }
 
         function updateCurrentModifyInfo(currentModify) {
@@ -409,13 +461,26 @@ myApp.controller('simpleController', function ($scope) {
                 currentTextRegion.appendChild(newCoords);
             hasLastChange = true;
         }
+        
+        // update the DOM after deleting the polygon
+        function updateDOMDelete(idCurrentModify) {
+            var page = xmlDoc.getElementsByTagName("Page")[0];
+            var textRegions = page.childNodes;
+            var currentTextRegion = null;
+            for (var i = 0; i < textRegions.length; i++) {
+                var idXML = textRegions[i].getAttribute("id");             
+                if (idXML == idCurrentModify) 
+                    page.removeChild(textRegions[i]);  
+            }
+            hasLastChange = true;
+        }
 
         tool.onMouseMove = function (event) {
             // there are two types of modification: modify the existing corners of the polygon,
             // or insert a point within the existing boundary. Both are to be done with drag.
             mousePosition.html("x: " + Math.round(event.point.x) + ", y: " + Math.round(event.point.y));
             searchPath(event);
-            if (!modeDraw)
+            if (!modeDraw && !autoSplit)
                 searchCurrentModifyPt(event);             
         }
         
@@ -430,7 +495,7 @@ myApp.controller('simpleController', function ($scope) {
             var nearestDistance = 100000;
             for (var i = 0; i < layerChildren.length; i++) {
                 console.log();
-                if (layerChildren[i].className == "Path") {
+                if (layerChildren[i].className == "Path" && layerChildren[i].visible) {
                     // search among paths that are not a single point, drawn by users, and already closed.
                     if (layerChildren[i].segments.length > 1 && 
                         layerChildren[i].strokeColor && 
@@ -611,6 +676,20 @@ myApp.controller('simpleController', function ($scope) {
             
             alert(path.getOffsetOf(new Point(80, 25)));
         }
+        
+        // when backspace is pressed and currentModify exists, then delete it.
+        tool.onKeyDown = function (event) {          
+        	if (event.key == 'backspace' && !$('#myModal').hasClass('in') && !$('#myModalAutoSeg').hasClass('in')){
+                event.preventDefault();
+                if (currentModify){
+                    if (currentModify.data.idXML) 
+                        updateDOMDelete(currentModify.data.idXML);
+                    else
+                        updateDOMDelete(currentModify.id);
+                    currentModify.remove();
+                }
+            }
+        }
 
 
         $scope.removePolygon = function () {
@@ -646,7 +725,7 @@ myApp.controller('simpleController', function ($scope) {
         }
 
         $scope.drawTextLine = function () {
-            	color = 'green';
+            	color = 'red';
                 drawRegionGlyph.className = "hidden";
             	document.getElementById("drawTextLineGlyph").className = "glyphicon glyphicon-ok";
                 drawRegionGlyph = document.getElementById("drawTextLineGlyph");
@@ -660,21 +739,21 @@ myApp.controller('simpleController', function ($scope) {
         }
         
         $scope.drawDecoration = function () {
-            	color = 'magenta';
+            	color = 'green';
                 drawRegionGlyph.className = "hidden";
             	document.getElementById("drawDecorationGlyph").className = "glyphicon glyphicon-ok";
                 drawRegionGlyph = document.getElementById("drawDecorationGlyph");
         }
         
         $scope.drawComment = function () {
-            	color = 'orange';
+            	color = 'purple';
                 drawRegionGlyph.className = "hidden";
             	document.getElementById("drawCommentGlyph").className = "glyphicon glyphicon-ok";
                 drawRegionGlyph = document.getElementById("drawCommentGlyph");
         }
         
         $scope.drawPage = function () {
-            	color = 'white';
+            	color = 'cyan';
                 drawRegionGlyph.className = "hidden";
             	document.getElementById("drawPageGlyph").className = "glyphicon glyphicon-ok";
                 drawRegionGlyph = document.getElementById("drawPageGlyph");
@@ -695,6 +774,7 @@ myApp.controller('simpleController', function ($scope) {
         }
         
         $scope.showTextLine = function () {
+            showTextLineFlag = !showTextLineFlag;
             if (showTextLineFlag){
                 document.getElementById("showTextLineGlyph").className = "glyphicon glyphicon-ok";
             }
@@ -712,10 +792,10 @@ myApp.controller('simpleController', function ($scope) {
                 }
             }
             view.draw();
-            showTextLineFlag = !showTextLineFlag;
         }
         
         $scope.showTextBlock = function () {
+            showTextBlockFlag = !showTextBlockFlag;
             if (showTextBlockFlag){
                 document.getElementById("showTextBlockGlyph").className = "glyphicon glyphicon-ok";
             }
@@ -733,10 +813,10 @@ myApp.controller('simpleController', function ($scope) {
                 }
             }
             view.draw();
-            showTextBlockFlag = !showTextBlockFlag;
         }
         
         $scope.showDecoration = function () {
+            showDecorationFlag = !showDecorationFlag;
             if (showDecorationFlag){
                 document.getElementById("showDecorationGlyph").className = "glyphicon glyphicon-ok";
             }
@@ -754,10 +834,10 @@ myApp.controller('simpleController', function ($scope) {
                 }
             }
             view.draw();
-            showDecorationFlag = !showDecorationFlag;
         }
         
         $scope.showComment = function () {
+            showCommentFlag = !showCommentFlag;
             if (showCommentFlag){
                 document.getElementById("showCommentGlyph").className = "glyphicon glyphicon-ok";
             }
@@ -775,10 +855,10 @@ myApp.controller('simpleController', function ($scope) {
                 }
             }
             view.draw();
-            showCommentFlag = !showCommentFlag;
         }
         
         $scope.showPage = function () {
+            showPageFlag = !showPageFlag;
             if (showPageFlag){
                 document.getElementById("showPageGlyph").className = "glyphicon glyphicon-ok";
             }
@@ -796,7 +876,6 @@ myApp.controller('simpleController', function ($scope) {
                 }
             }
             view.draw();
-            showPageFlag = !showPageFlag;
         }
     
         // import the ground truth
@@ -893,13 +972,6 @@ myApp.controller('simpleController', function ($scope) {
             document.body.removeChild(event.target);
         }
 
-
-        $scope.importImg = function () {
-            $(document).ready(function () {
-                $('#myImg').click();
-            });
-        }
-
         // load new image. Reference to test3.html, or check email "useful posts.."
         /*$scope.fileNameChanged = function (event) {
             console.log("select file");
@@ -917,21 +989,6 @@ myApp.controller('simpleController', function ($scope) {
             };
             reader.readAsDataURL(selectedFile);
         }*/
-        
-        $(document).ready(function (event) {
-            // do import event whenever #myInput is closed.
-            $("#myImg").change(function (event) {
-                var fileToLoad = event.target.files[0];
-                var fileReader = new FileReader();
-                fileReader.onload = function (event) {
-                	document.getElementById("parzival").src = event.target.result;
-                	imgName = fileToLoad.name;
-                    init();
-                };
-                fileReader.readAsDataURL(fileToLoad);
-                //       var fileText = fileReader.result;
-            });
-        });
         
         $(document).ready(function (event) {
             // do import event whenever #myInput is closed.
@@ -1014,16 +1071,16 @@ myApp.controller('simpleController', function ($scope) {
                     break;
                 case "comment":
                 //    currentDrawPath.strokeColor = 'orange';
-                    currentDrawPath.strokeColor = 'magenta';    
+                    currentDrawPath.strokeColor = 'purple';    
                     break;
                 case "text":
                     currentDrawPath.strokeColor = 'blue';
                     break;
                 case "page":
-                    currentDrawPath.strokeColor = 'white';
+                    currentDrawPath.strokeColor = 'cyan';
                     break;
                 }
-                currentDrawPath.strokeWidth = 10; //2
+                currentDrawPath.strokeWidth = 4; //2
                 currentDrawPath.data.idXML = textRegions[i].getAttribute("id");
                 currentDrawPath.data.comments = textRegions[i].getAttribute("comments");
                 currentDrawPath.closed = true;
@@ -1160,7 +1217,29 @@ myApp.controller('simpleController', function ($scope) {
         // limit of the ajax POST size. See:
         // http://www.enterprise-architecture.org/documentation/doc-administration/145-post-size-limit
         // http://stackoverflow.com/questions/12194997/unable-to-change-tomcat-users-xml-and-server-xml-while-tomcat7-runs-within
-        $(document).ready(function() {                          
+        /*$(document).ready(function () {
+            $('#autoSegment').click(function () {
+
+                setTimeout(function () {
+                    var txtFile = new XMLHttpRequest();
+                    txtFile.open("GET", "https://diuf.unifr.ch/diva/divadiaweb/d-008_kai.chen@unifr.ch.xml", true);
+                    txtFile.onreadystatechange = function () {
+                        if (txtFile.readyState === 4) // Makes sure the document is ready to parse.
+                        {
+                            if (txtFile.status === 200) // Makes sure it's found the file.
+                            {
+                                allText = txtFile.responseText;
+                                console.log(allText);
+                                drawGT(allText);
+                            }
+                        }
+                    }
+                    txtFile.send(null);
+                }, 10000);
+            });
+        });*/
+        
+        $(document).ready(function() { 
             $('#autoSegment').click(function() {
             	document.getElementById("autoSegmentComment").innerHTML = "Please wait for a few seconds!";
             	var imageUrl = document.getElementById("parzival").src;      
@@ -1176,12 +1255,94 @@ myApp.controller('simpleController', function ($scope) {
             });
         });
         
+        
+        $scope.splitPolygon = function () {
+        	autoSplit = !autoSplit;
+        	if (autoSplit){       	
+        		modeModify = false;
+        	     //   	document.getElementById("canvas").style.cursor = 
+        	      //  		"url(http://www.javascriptkit.com/dhtmltutors/cursor-hand.gif), auto";	
+        	    document.getElementById("canvas").style.cursor = 
+        		        "url(http://www.rw-designer.com/cursor-extern.php?id=25320), auto";
+        	} else {
+        		document.getElementById("canvas").style.cursor = "auto";
+        	}  	
+        }
+        
+        function autoSplitPolygon (splitPolygon, xSplit, ySplit) {
+/*        	var employees = [
+        	                 {x:1, y:2},
+        	                 {x:3, y:4},
+        	                 {x:5, y: 6}
+        	             ];*/
+        	$.ajax({
+        		type: "POST", // it's easier to read GET request parameters
+        	    url: '/DIVADIAGTWeb/SplitServlet',
+        	    dataType: 'JSON',
+        	    data: { 
+        	    	xSplit: xSplit,
+        	    	ySplit: ySplit,
+        	        splitPolygon: JSON.stringify(splitPolygon) // look here!
+        	    },
+        	    success: function(data) {
+        	    	console.log(data);  
+        	    	if (data.textLines.length == 2){
+        	    		currentSplitPolygon.remove();
+        	    		processResponseJson(data);	
+        	    	} else 
+        	    		alert("Split operation failed.");
+        	    }
+        	});
+        }
+        
+        
+        function autoExtractTextLines (top, bottom, left, right){
+        	document.getElementById("autoSegmentComment").innerHTML = "Please wait for a few seconds!";
+			var imageUrl = document.getElementById("parzival").src;
+			/*$.post('AutoSegmentServlet', {
+					imageName : imgName,
+					imageURL : imageUrl,				
+		            top: top,
+		            bottom: bottom,
+		            left: left,
+		            right: right    	
+			}, function(responseJson) {
+				console.log(responseJson);
+				processResponseJson(responseJson);
+			});*/
+			
+			
+			$.ajax({
+        		type: "POST", // it's easier to read GET request parameters
+        	    url: 'AutoSegmentServlet',
+        	    dataType: 'JSON',
+        	    data: { 
+        	    	imageName : imgName,
+					imageURL : imageUrl,				
+		            top: top,
+		            bottom: bottom,
+		            left: left,
+		            right: right,
+		            linkingRectWidth: $scope.linkingRectWidth,
+		            linkingRectHeight: $scope.linkingRectHeight
+        	    },
+        	    success: function(data) {
+        	    	console.log(data);
+    				processResponseJson(data);
+        	    },
+        	    error: function(){
+        	        alert('Automatic text lines extraction failed.');
+        	        document.getElementById("autoSegmentComment").innerHTML = "";
+        	        autoTextline = false;
+        	      }
+        	});
+			
+			
+        }
+        
         function processResponseJson(responseJson){
         	if (responseJson.textBlocks){
         		drawAutoResult(responseJson.textBlocks, "textBlocks");
-        	}
-        	if (responseJson.page){
-        		drawAutoResult(responseJson.page, "page");
         	}
         	if (responseJson.textLines){
         		drawAutoResult(responseJson.textLines, "textLines");
@@ -1204,15 +1365,19 @@ myApp.controller('simpleController', function ($scope) {
             });
         });
 
-        function drawAutoResult(textRegions, regionType){
-      //  	alert("call drawAutoResult");            
+        function drawAutoResult(textRegions, regionType){           
         	for (var i = 0; i < textRegions.length; i++){
+        		$scope.polygon = [];
         		var points = textRegions[i];
-                var currentDrawPath = new Path();
+                currentDrawPath = new Path();
                 for (var j = 0; j < points.length; j++) {
                     pointPath = points[j];
                     var x = pointPath[0];
                     var y = pointPath[1];
+                    $scope.polygon.push({
+                        x: x,
+                        y: y
+                    });
                     // transform the coordinate to display it
                     x = x * zoom + raster.bounds.x;
                     y = y * zoom + raster.bounds.y;
@@ -1230,36 +1395,35 @@ myApp.controller('simpleController', function ($scope) {
                 case "textBlocks":
                     currentDrawPath.strokeColor = 'blue';
                     break;
-                case "page":
-                    currentDrawPath.strokeColor = 'red';
-                    break;
                 case "textLines":
-                    currentDrawPath.strokeColor = 'green';
+                    currentDrawPath.strokeColor = 'red';
                     document.getElementById("autoSegmentComment").innerHTML = "";
                     break;
                 }
                 currentDrawPath.strokeWidth = 2;
                 currentDrawPath.closed = true;
-            //    alert("done!");
+                if (xmlDoc == null)
+                    initDom();
+                updateDOMDraw();
         	}
         }
         
-        $scope.selectTextBlock = function () {
-        	$scope.drawRectangle();
-        	$scope.drawTextBlock();
-        	
-        	document.getElementById("autoSegmentComment").innerHTML = "Please wait for a few seconds!";
-        	var imageUrl = document.getElementById("parzival").src;      
-            $.post('AutoSegmentServlet', 
-              {
-            	imageName:imgName,
-            	imageURL:imageUrl
-              },
-              function(responseJson) {    
-            	console.log(responseJson);  
-            	processResponseJson(responseJson);
-            }); 
-        }
+
+						
+		$scope.selectTextBlock = function() {
+			autoTextline = !autoTextline;
+			if (autoTextline){
+				document.getElementById("canvas").style.cursor = 
+			        "url(https://diuf.unifr.ch/diva/divadiaweb/rectangle.gif), auto";
+				$scope.drawRectangle();
+				$scope.drawTextBlock();
+				autoSplit = false;
+			} else {
+				document.getElementById("canvas").style.cursor = "auto";
+			}
+		}
+			        
+        
       
     };
 });

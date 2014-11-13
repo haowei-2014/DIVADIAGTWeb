@@ -30,16 +30,19 @@ import ij.*;
 public class TextLineExtraction {
 
 	public String pathName = "/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/";
-	public String fileName = "GaborOutput_0.png";
-//	public static String originalName = "d-008.0.1091.205.507.2337.png";
-	public static String originalName = "d-008.1.368.200.484.2360.png";
+	public String fileName = "manualTextBlockOutput.png";
+	public static String originalName = "manualTextBlockInput.png";
+//	public static String originalName = "SaintGall_GaborInput.422.412.png";
 	
 	public LinkedHashMap<String, Rectangle> patches = new LinkedHashMap<String, Rectangle>();
+	ArrayList<Polygon> polygonsGT;
+	public static int linkingRectHeight = 0;
+	public static int linkingRectWidth = 0;
 	/**
 	 * @param args
 	 */
 	
-	public ArrayList<Polygon> start (){
+	public ArrayList<Polygon> start (int offsetX, int offsetY){
 		BufferedImage img = null;
 		BufferedImage imgOriginal = null;
 		try {
@@ -51,14 +54,15 @@ public class TextLineExtraction {
 		drawCCs(img, imgOriginal);
 		segmentCCs(pathName, img);
 		linkCCs(pathName, originalName, img);
-		ArrayList<Polygon> polygonsGT = drawGT(pathName);
+		polygonsGT = drawGT(pathName);
+		offsetGT (offsetX, offsetY);
 		System.out.println("Done!");
 		return polygonsGT;
 	}
 	
 	public static void main(String[] args) {
 		TextLineExtraction tle = new TextLineExtraction();
-		tle.start();
+		tle.start(0, 0);
 	}
 	
 	private ManyBlobs allBlobs;
@@ -175,7 +179,7 @@ public class TextLineExtraction {
 		}
 		
 		// draw the separating points and rectangles wrapping the polygons and then create an image for show
-		/*BufferedImage imgShow = new BufferedImage(img.getWidth(), img.getHeight(),
+		BufferedImage imgShow = new BufferedImage(img.getWidth(), img.getHeight(),
 				BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = imgShow.createGraphics();	
 		g2d.drawImage(img, 0, 0, null);
@@ -186,8 +190,11 @@ public class TextLineExtraction {
 		}	
 		Color clr = Color.green;
 		for (Point p : separatingPointsInOriginal){
-			imgShow.setRGB(p.x, p.y, clr.getRGB());
-		}	
+			if (p.x < imgShow.getWidth() && p.y < imgShow.getHeight()
+					&& p.x >= 0 && p.y >=0){
+				imgShow.setRGB(p.x, p.y, clr.getRGB());
+			}
+		}
 		g2d.dispose();
 		try {
 			File file = new File(pathName + "segmentationProjectionShow.png");
@@ -201,8 +208,12 @@ public class TextLineExtraction {
 		
 		// draw the separating points on the original gray image and then create the image for next processing
 		WritableRaster raster = img.getRaster(); 
-		for (Point p : separatingPointsInOriginal)
-			raster.setSample(p.x, p.y, 0, 255); 
+		for (Point p : separatingPointsInOriginal){
+			if (p.x < imgShow.getWidth() && p.y < imgShow.getHeight()
+					&& p.x >= 0 && p.y >=0){
+				raster.setSample(p.x, p.y, 0, 255); 
+			}
+		}
 		try {
 			File file = new File(pathName + "segmentationProjectionNext.png");
 			if (file.exists())
@@ -210,11 +221,12 @@ public class TextLineExtraction {
 			ImageIO.write(img, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
+		}
 	}
 	
 	public void linkCCs(String pathName, String originalName, BufferedImage img){
-		LinkCCs linkCCs = new LinkCCs(pathName, originalName);
+//		LinkCCs linkCCs = new LinkCCs(pathName, originalName);
+		LinkCCsV2 linkCCs = new LinkCCsV2(pathName, originalName);
 		linkCCs.start(img);
 	}
 	
@@ -222,5 +234,13 @@ public class TextLineExtraction {
 		DrawGT drawGT = new DrawGT(pathName);	
 		ArrayList<Polygon> polygonsGT = drawGT.start();
 		return polygonsGT;
+	}
+	
+	public void offsetGT (int x, int y){
+		for (Polygon polygon: polygonsGT){
+			// move to the coordinates on the original image
+			// +1 is optional. It is probably due to the problem of the coordinates of ijblob polygon.
+			polygon.translate(x + 1, y); 
+		}
 	}
 }

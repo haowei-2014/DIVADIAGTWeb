@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DivaDiaWeb</title>
+<title>DIVADIAWeb</title>
 
 <!--   <link rel="stylesheet" href="css/docs.css" />-->
 
@@ -95,11 +95,11 @@
 </div>
 
 
-    <select ng-model="myShape"
-				ng-options="shape.name for shape in shapes" style="visibility: hidden; display: none" ></select>
+    <!--<select ng-model="myShape"
+				ng-options="shape.name for shape in shapes" ></select>
     <select ng-model="myRegion"
-				ng-options="region.name for region in regions" style="visibility: hidden; display: none"></select>
-    <button type="button" class="btn btn-primary" ng-click="importImg()">Import
+				ng-options="region.name for region in regions" ></select>-->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Import
 				Img </button>
     <input id="myImg" type="file"
 				style="visibility: hidden; display: none" />
@@ -112,12 +112,16 @@
 			<button type="button" id="showInfoButton" class="btn btn-primary btnTop"
 				ng-click="showImgInfo()" style="visibility: hidden; display: none">Hide Info</button>
 			<button type="button" id="testButton" class="btn btn-primary btnTop" ng-click="test()" style="visibility: hidden; display: none">test</button>
-			<button id="autoSegment" type="button" class="btn btn-primary" >AutoSegment</button>
-			<button id="loadDatabase" type="button" class="btn btn-primary" >LoadDatabase</button>
+			<button id="autoSegment" type="button" class="btn btn-primary" >Automatic</button>
+			<button id="loadDatabase" type="button" class="btn btn-primary" style="visibility: hidden; display: none">LoadDatabase</button>
             <button type="button" class="btn btn-primary"
 					ng-click="removePolygon()" style="visibility: hidden; display: none">Remove</button>
 			<span title="Select a rectangle enclosing a text block. After selection, the system will automatically extract text lines. So please wait for a few seconds.">
-				<button id="selectTextBlock" type="button" class="btn btn-primary" ng-click="selectTextBlock()">Select textblock</button>
+				<button id="selectTextBlock" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalAutoSeg" >Select textblock</button>
+			</span>
+			<!-- ng-click="selectTextBlock()" -->
+			<span title="Split the polygon at the mouse position">
+				<button id="splitPolygon" type="button" class="btn btn-primary" ng-click="splitPolygon()">Split</button>
 			</span>
 			
             <!--<span>Working mode:</span>
@@ -132,8 +136,8 @@
 			<span style="visibility: hidden; display: none">Comment:</span>
 			<textarea class="form-control" ng-model="comment"
 				ng-change="editComment()" style="visibility: hidden; display: none"></textarea>
-    <span id="autoSegmentComment" style="color:red;"></span>
-
+    <!--<span id="autoSegmentComment" style="color:red;">Note that the mockup only works on the default image. The real interface is only accessible inside the local network of the University of Fribourg, but will be opened in future.</span>
+-->
     
 <!-- modal to choose an image.  -->
 
@@ -159,6 +163,33 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!-- modal to make settings for automatic segmentation.  -->
+
+<div class="modal fade" id="myModalAutoSeg">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Settings for automatic segmentation</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please fill in the following values:</p>
+        <p>Size of the linking rectangle:</p>
+        Width:<input type="text" size="5" ng-model="linkingRectWidth"/>        
+        &nbsp;&nbsp;&nbsp;                   
+        Height:<input type="text" size="5" ng-model="linkingRectHeight"/> 
+        <br>
+        <br>
+        <p>Or browse from your local computer:</p>
+        <input id="myImage" type="file"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="selectTextBlock()">Okay</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 
 
@@ -173,7 +204,7 @@
 			<canvas height="820" width="1920"
 				style="background: #e4e1e1; border: 1px solid #0000FF;" id="canvas" overflow: scroll></canvas>
 			<!--                </div>-->
-			<img class="hidden" id="parzival" src="csg562-022.png" alt="The Scream">
+			<img class="hidden" id="parzival" src="d-008.png" alt="The Scream">
 
 
 	</div>
@@ -184,6 +215,7 @@
     <span id='xyClick'></span>
     <span>Mouse position:</span>
     <span id='mousePosition'></span>
+    <div id='xmlFile'></div>
 </body>
 
 </html>

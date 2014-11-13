@@ -22,6 +22,10 @@ import javax.imageio.ImageIO;
  * @author WeiH
  *
  */
+/**
+ * @author hao
+ *
+ */
 public class LinkCCs {
 	public String pathName = null;
 	public String originalName = null;
@@ -30,7 +34,8 @@ public class LinkCCs {
 	// inner class including blobs within the same line
     public class line {
     	public ArrayList<Blob> lineBlobs = new ArrayList<Blob>();
-    	ArrayList<Rectangle> linkingRects = new ArrayList<Rectangle>(); 
+//    	public ArrayList<Rectangle> linkingRects = new ArrayList<Rectangle>(); 
+    	public ArrayList<RectangleClass> linkingRects = new ArrayList<RectangleClass>(); 
     	public Blob leftmostBlob;
     	public Blob rightmostBlob;
     	public Rectangle leftmostRect;
@@ -55,6 +60,22 @@ public class LinkCCs {
     	}
     }
     
+    
+    /**
+     * A class for rectangle. 
+     *
+     */
+    public class RectangleClass {
+    	public Rectangle rectangle;  // rectangle itself
+    	public Polygon leftPolygon;  // its left polygon
+    	public Polygon rightPolygon;  // its right polygon
+    	RectangleClass(Rectangle rectangle, Polygon leftPolygon, Polygon rightPolygon){
+    		this.rectangle = rectangle;
+    		this.leftPolygon = leftPolygon;
+    		this.rightPolygon = rightPolygon;
+    	}
+    }
+    
     public LinkCCs(String pathName, String originalName) {
     	this.pathName = pathName;
     	this.originalName = originalName;
@@ -69,8 +90,8 @@ public class LinkCCs {
 		Rectangle rect = new Rectangle();
 		Rectangle boundingRect = CommonFunctions.adjustPolygon(
 				blob.getOuterContour()).getBounds();
-		rect.width = 40;
-		rect.height = 10;
+		rect.width = 60;
+		rect.height = 20;
 		rect.y = boundingRect.y + boundingRect.height/2 - rect.height/2;
 		if (orientation == Orientation.LEFT){
 			rect.x = boundingRect.x + 10 - rect.width;
@@ -119,12 +140,15 @@ public class LinkCCs {
 				continueRight = false;
 			if (leftRect != null) {
 				linkingRects.add(leftRect);
-				oneLine.linkingRects.add(leftRect);
+//				oneLine.linkingRects.add(leftRect);
+				// add information about the rectangle, including itself, and its left and right polygons
+				oneLine.linkingRects.add(new RectangleClass(leftRect, null, initialBlob.getOuterContour()));
 				oneLine.leftmostRect = leftRect;
 			}
 			if (rightRect != null) {
 				linkingRects.add(rightRect);
-				oneLine.linkingRects.add(rightRect);
+//				oneLine.linkingRects.add(rightRect);
+				oneLine.linkingRects.add(new RectangleClass(rightRect, initialBlob.getOuterContour(), null));
 				oneLine.rightmostRect = rightRect;
 			}
 			
@@ -134,22 +158,31 @@ public class LinkCCs {
 			
 			// detect neighboring CC leftwards
 			while (continueLeft && remainingBlobs.size() > 0) {
+				if (continueLeft == false)
+					break;
 				for (Blob blob : remainingBlobs) {
 					Polygon p = CommonFunctions.adjustPolygon(blob
 							.getOuterContour());
 					previousLeftCC = leftCC;
 					if (p.intersects(leftRect)) {
 						leftCC = blob;
+						// the leftpolygon of the last RectangleClass instance is the blob
+						for (RectangleClass rc : oneLine.linkingRects){
+							if (rc.rectangle == leftRect){
+								rc.leftPolygon = blob.getOuterContour();	
+							}
+						}		
+						oneLine.lineBlobs.add(leftCC);
+						oneLine.leftmostBlob = leftCC;
+						remainingBlobs.remove(leftCC);	
 						leftRect = computeRect(leftCC, Orientation.LEFT);
 						if (leftRect == null) {
 							continueLeft = false;
 							break;
 						}
-						linkingRects.add(leftRect);
-						oneLine.linkingRects.add(leftRect);
-						remainingBlobs.remove(leftCC);
-						oneLine.lineBlobs.add(leftCC);
-						oneLine.leftmostBlob = leftCC;
+						linkingRects.add(leftRect);											
+						// add new RectangleClass instance
+						oneLine.linkingRects.add(new RectangleClass(leftRect, null, blob.getOuterContour()));																
 						oneLine.leftmostRect = leftRect;
 						break;
 					}
@@ -158,7 +191,7 @@ public class LinkCCs {
 				// move leftwards. Thus stop.
 				if (previousLeftCC == leftCC) { 
 					continueLeft = false;
-					oneLine.linkingRects.remove(oneLine.leftmostRect);
+					oneLine.linkingRects.remove(oneLine.linkingRects.size()-1);
 					}
 			}
 
@@ -170,23 +203,28 @@ public class LinkCCs {
 					previousRightCC = rightCC;
 					if (p.intersects(rightRect)) {
 						rightCC = blob;
+						for (RectangleClass rc : oneLine.linkingRects){
+							if (rc.rectangle == rightRect){
+								rc.rightPolygon = blob.getOuterContour();	
+							}
+						}
+						oneLine.lineBlobs.add(rightCC);
+						oneLine.rightmostBlob = rightCC;
 						rightRect = computeRect(rightCC, Orientation.RIGHT);
 						if (rightRect == null) {
 							continueRight = false;
 							break;
 						}
-						linkingRects.add(rightRect);
-						oneLine.linkingRects.add(rightRect);
+						linkingRects.add(rightRect);						
+						oneLine.linkingRects.add(new RectangleClass(rightRect, blob.getOuterContour(), null));					
 						remainingBlobs.remove(rightCC);
-						oneLine.lineBlobs.add(rightCC);
-						oneLine.rightmostBlob = rightCC;
 						oneLine.rightmostRect = rightRect;
 						break;
 					}
 				}
 				if (previousRightCC == rightCC){
 					continueRight = false;
-					oneLine.linkingRects.remove(oneLine.rightmostRect);
+					oneLine.linkingRects.remove(oneLine.linkingRects.size()-1);
 					}
 			}
 			oneLine.length = oneLine.rightmostBlob.getOuterContour().getBounds().x + 
@@ -212,21 +250,28 @@ public class LinkCCs {
 	 * @param lines
 	 */
 	public void drawRects(BufferedImage img, ArrayList<Rectangle> linkingRects, ArrayList<line> lines){	
-		ArrayList<Rectangle> regularLineRects = new ArrayList<Rectangle>();
+		ArrayList<RectangleClass> regularLineRects = new ArrayList<RectangleClass>();
 		for (line l : lines){
 			if (l.regular)
 				regularLineRects.addAll(l.linkingRects);		
-		}			
-		CommonFunctions.drawRects(pathName, img, regularLineRects, "linking.png");
+		}
+		ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
+		for (RectangleClass r : regularLineRects){
+			rectangles.add(r.rectangle);
+		}
+		if (regularLineRects != null){
+			CommonFunctions.drawRects(img, rectangles, "SegLinkCCsRects");
+			CommonFunctions.drawRects(pathName, img, regularLineRects, "SegLinkCCs.png");
+			}
 	}
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		LinkCCs linkCCs = new LinkCCs("E:\\HisDoc project\\Gabor_filter\\projection\\case1\\", 
-				"d-007.1.910.133.506.2358.png");
+		LinkCCs linkCCs = new LinkCCs("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/", 
+				"manualTextBlockInput.png");
 		BufferedImage img = null;
 		try {
-		    img = ImageIO.read(new File("E:\\HisDoc project\\Gabor_filter\\projection\\case1\\" 
+		    img = ImageIO.read(new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" 
 		+ "segmentationProjectionNext.png"));
 		} catch (IOException e) {
 			e.printStackTrace();

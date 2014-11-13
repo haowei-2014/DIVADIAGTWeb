@@ -25,4 +25,12 @@
     <servlet-name>GetImageServlet</servlet-name>
     <url-pattern>/GetImageServletPath</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>SplitServlet</servlet-name>
+    <servlet-class>ch.unifr.SplitServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SplitServlet</servlet-name>
+    <url-pattern>/SplitServletPath</url-pattern>
+  </servlet-mapping>
 </web-app>
