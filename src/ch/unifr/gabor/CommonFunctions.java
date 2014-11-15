@@ -312,6 +312,110 @@ public class CommonFunctions {
 		return imgShow;
 	}
 	
+	// link the polygon pair (left and right one) with a polygon.
+		public static BufferedImage drawRectsMerge(BufferedImage img, Polygon polygonLeft, Polygon polygonRight, Rectangle rect) {
+			BufferedImage imgShow = new BufferedImage(img.getWidth(),
+					img.getHeight(), BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2d = imgShow.createGraphics();
+			g2d.drawImage(img, 0, 0, null);
+			g2d.setColor(Color.black);
+
+			// get the left top and left bottom points where the rectangle intersects its left polygon
+			ArrayList<Point> leftPoints = new ArrayList<Point>();
+			int numberPoints = polygonLeft.npoints;
+			for (int i = 0; i < numberPoints; i++) {
+				leftPoints.add(new Point(polygonLeft.xpoints[i],
+						polygonLeft.ypoints[i]));
+			}
+			int leftTop = 10000;
+			int leftBottom = 0;
+			for (int i = 0; i < leftPoints.size()-1; i++){
+				if ((rect.x >= leftPoints.get(i).x && rect.x < leftPoints.get(i+1).x) || 
+						(rect.x <= leftPoints.get(i).x && rect.x > leftPoints.get(i+1).x)){
+					if (leftTop > leftPoints.get(i).y)
+						leftTop = leftPoints.get(i).y;
+					if (leftBottom < leftPoints.get(i).y)
+						leftBottom = leftPoints.get(i).y;
+				}
+			}
+			// in case that the linking rectangle completely contains its left polygon.
+			if (leftTop == 10000) {
+				for (Point point : leftPoints) {
+					if (point.x == polygonLeft.getBounds().x
+							+ polygonLeft.getBounds().width / 2
+							&& leftTop > point.y) {
+						leftTop = point.y;
+					}
+					if (point.x == polygonLeft.getBounds().x
+							+ polygonLeft.getBounds().width / 2
+							&& leftBottom < point.y) {
+						leftBottom = point.y;
+					}
+				}
+			}
+			if (leftTop < 0)
+				leftTop = 0;
+
+			// get the right top and right bottom points where the rectangle intersects its right polygon
+			ArrayList<Point> rightPoints = new ArrayList<Point>();
+			numberPoints = polygonRight.npoints;
+			for (int i = 0; i < numberPoints; i++) {
+				rightPoints.add(new Point(polygonRight.xpoints[i],
+						polygonRight.ypoints[i]));
+			}
+			int rightTop = 10000;
+			int rightBottom = 0;
+			for (int i = 0; i < rightPoints.size()-1; i++){
+				if (((rect.x + rect.width) >= rightPoints.get(i).x && (rect.x + rect.width) < rightPoints.get(i+1).x) || 
+						((rect.x + rect.width) <= rightPoints.get(i).x && (rect.x + rect.width) > rightPoints.get(i+1).x)){
+					if (rightTop > rightPoints.get(i).y)
+						rightTop = rightPoints.get(i).y;
+					if (rightBottom < rightPoints.get(i).y)
+						rightBottom = rightPoints.get(i).y;
+				}
+			}
+			
+			// in case that the linking rectangle completely contains its right polygon.
+			if (rightTop == 10000) {
+				for (Point point : rightPoints) {
+					int tmpX = polygonRight.getBounds().x
+							+ polygonRight.getBounds().width / 2;
+					if (point.x == tmpX
+							&& rightTop > point.y) {
+						rightTop = point.y;
+					}
+					if (point.x == tmpX
+							&& rightBottom < point.y) {
+						rightBottom = point.y;
+					}
+				}
+			}
+			if (rightTop < 0)
+				rightTop = 0;
+			
+			// shrink the linking polygon by lowering its top vertexes and lifting its bottom vertexes. 
+			if (leftBottom > leftTop + 6)
+			{
+				leftBottom -= 3;
+				leftTop += 3;
+			}
+			if (rightBottom > rightTop + 6)
+			{
+				rightBottom -= 3;
+				rightTop += 3;
+			}
+
+			// fill the polygon with the black color
+			Polygon linkingPolygon = new Polygon();
+			linkingPolygon.addPoint(rect.x, leftTop);
+			linkingPolygon.addPoint(rect.x + rect.width, rightTop);
+			linkingPolygon.addPoint(rect.x + rect.width, rightBottom);
+			linkingPolygon.addPoint(rect.x, leftBottom);
+			g2d.fillPolygon(linkingPolygon);
+			
+			return imgShow;
+		}
+	
 	public static void drawRects(BufferedImage img, ArrayList<Rectangle> rects, String name){
 		BufferedImage imgShow = new BufferedImage(img.getWidth(), img.getHeight(),
 				BufferedImage.TYPE_INT_RGB);
@@ -334,5 +438,34 @@ public class CommonFunctions {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * This function is: pick up every a few points on the original
+	 * polygon boundary and construct a new polygon
+	 * 
+	 * @param polygon
+	 * @return
+	 */
+	public static Polygon resamplePolygon(Polygon polygon) {
+		ArrayList<Point> points = new ArrayList<Point>();
+		int numberPoints = polygon.npoints;
+		for (int i = 0; i < numberPoints; i++) {
+			points.add(new Point(polygon.xpoints[i], polygon.ypoints[i]));
+		}
+
+		int interval = 10; // pick up points every interval points
+		int newNumberPoints = (numberPoints - 1) / interval + 1; // number of boundary points on the new polygon
+		int[] xNewPoints = new int[(numberPoints - 1) / interval + 1];
+		int[] yNewPoints = new int[(numberPoints - 1) / interval + 1];
+		int newIndex = 0;
+		for (int i = 0; i < numberPoints; i++) {
+			if (i % interval == 0) {
+				xNewPoints[newIndex] = points.get(i).x;
+				yNewPoints[newIndex] = points.get(i).y;
+				newIndex++;
+			}
+		}
+		return new Polygon(xNewPoints, yNewPoints, newNumberPoints);
 	}
 }

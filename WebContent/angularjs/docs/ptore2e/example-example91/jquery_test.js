@@ -1,8 +1,10 @@
-describe("expression", function() {
+describe("", function() {
+  var rootEl;
   beforeEach(function() {
-    browser.get("./examples/example-example91/index-jquery.html");
+    rootEl = browser.rootEl;
+    browser.get("examples/example-example91/index-jquery.html");
   });
-
+  
   it('should calculate expression in binding', function() {
     if (browser.params.browser == 'safari') {
       // Safari can't handle dialogs.

@@ -1,8 +1,10 @@
-describe("$location", function() {
+describe("", function() {
+  var rootEl;
   beforeEach(function() {
-    browser.get("./examples/example-location-hashbang-mode/index-jquery.html");
+    rootEl = browser.rootEl;
+    browser.get("examples/example-location-hashbang-mode/index-jquery.html");
   });
-
+  
   var addressBar = element(by.css("#addressBar")),
        url = 'http://www.example.com/base/index.html#!/path?a=b#h';
 

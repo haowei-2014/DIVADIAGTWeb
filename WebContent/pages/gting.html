@@ -1,0 +1,225 @@
+<div class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown">File</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li data-toggle="modal" data-target="#myModal"><a href="">Open Image...</a>
+                        </li>
+                        <li><a href="" ng-click="importGT()">Read GT...</a>
+                        </li>
+                        <li><a href="" ng-click="exportGT()">Save GT...</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="">Exit</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown">Draw</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="drawTextLine" ng-click="drawTextLine()"><a href="">Text line <span id="drawTextLineGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a></li>
+                        <li id="drawTextBlock" ng-click="drawTextBlock()"><a href="">Text block <span id="drawTextBlockGlyph" class="glyphicon glyphicon-ok hidden" style="float:right;"></span></a></li>
+                        <li id="drawDecoration" ng-click="drawDecoration()"><a href="">Decoration <span id="drawDecorationGlyph" class="glyphicon glyphicon-ok hidden" style="float:right;"></span></a></li>
+                        <li id="drawComment" ng-click="drawComment()"><a href="">Comment <span id="drawCommentGlyph" class="glyphicon glyphicon-ok hidden" style="float:right;"></span></a></li>
+                        <li id="drawPage" ng-click="drawPage()"><a href="">Page <span id="drawPageGlyph" class="glyphicon glyphicon-ok hidden" style="float:right;"></span></a></li>
+                        <li class="divider"></li>
+                        <li id="drawPolygon" ng-click="drawPolygon()"><a href="">Polygon <span id="drawPolygonGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a></li>
+                        <li id="drawRectangle" ng-click="drawRectangle()"><a href="">Rectangle <span id="drawRectangleGlyph" class="glyphicon glyphicon-ok hidden" style="float:right;"></span></a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown">Show</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="showTextLine" ng-click="showTextLine()"><a href="">Text line <span id="showTextLineGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a></li>
+                        <li id="showTextBlock" ng-click="showTextBlock()"><a href="">Text block <span id="showTextBlockGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a></li>
+                        <li id="showDecoration" ng-click="showDecoration()"><a href="">Decoration <span id="showDecorationGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a></li>
+                        <li id="showComment" ng-click="showComment()"><a href="">Comment <span id="showCommentGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a></li>
+                        <li id="showPage" ng-click="showPage()"><a href="">Page <span id="showPageGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown">Settings</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="autoSegSettings" data-toggle="modal" data-target="#myModalAutoSeg" ><a href="">Segmentation</a></li>
+                        <li id="autoSplitSettings" ng-click="showTextLine()"><a href="">Split</a></li>
+                        <li id="autoMergeSettings" ng-click="showTextLine()"><a href="">Merge</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown">Help</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="autoSegSettings"><a href="#userguide" target="_blank">User Guide</a></li>
+                        <li id="autoSplitSettings" data-toggle="modal" data-target="#myModalAbout"><a href="">About</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!--<ul class="nav navbar-nav navbar-right">
+                <li class="active"><a href="./">Default</a>
+                </li>
+                <li><a href="../navbar-static-top/">Static top</a>
+                </li>
+                <li><a href="../navbar-fixed-top/">Fixed top</a>
+                </li>
+            </ul>-->
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+    <!--/.container-fluid -->
+</div>
+
+<!--<select ng-model="myShape"
+				ng-options="shape.name for shape in shapes" ></select>
+    <select ng-model="myRegion"
+				ng-options="region.name for region in regions" ></select>-->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Import
+				Img </button>
+    <input id="myImg" type="file"
+				style="visibility: hidden; display: none" />
+			<button type="button" class="btn btn-primary" ng-click="importGT()">Import
+				GT</button>
+			<input id="myInput" type="file"
+				style="visibility: hidden; display: none" />
+			<button type="button" class="btn btn-primary" ng-click="exportGT()">Export
+				GT</button>
+			<button type="button" id="showInfoButton" class="btn btn-primary btnTop"
+				ng-click="showImgInfo()" style="visibility: hidden; display: none">Hide Info</button>
+			<button type="button" id="testButton" class="btn btn-primary btnTop" ng-click="test()" style="visibility: hidden; display: none">test</button>
+			<button id="autoSegment" type="button" class="btn btn-primary" style="visibility: hidden; display: none">Automatic</button>
+			<button id="loadDatabase" type="button" class="btn btn-primary" style="visibility: hidden; display: none">LoadDatabase</button>
+            <button type="button" class="btn btn-primary"
+					ng-click="removePolygon()" style="visibility: hidden; display: none">Remove</button>
+			<span title="Select a rectangle enclosing a text block. After selection, the system will automatically extract text lines. So please wait for a few seconds.">
+				<button id="selectTextBlock" type="button" class="btn btn-primary" ng-click="selectTextBlock()">AutoSeg</button>
+			</span>
+			<!-- ng-click="selectTextBlock()" -->
+			<span title="Click this button, and click the position to split a polygon.">
+				<button id="splitPolygon" type="button" class="btn btn-primary" ng-click="splitPolygon()">Split</button>
+			</span>
+			<span title="Click this button, and click two polygons to be merged.">
+				<button id="splitPolygon" type="button" class="btn btn-primary" ng-click="mergePolygons()">Merge</button>
+			</span>
+			<span id="userGuideSpan"><a href="#userguide" target="_blank" id="userGuide">User Guide</a>&nbsp;&nbsp;&nbsp;</span>
+			
+            <!--<span>Working mode:</span>
+			<label class="radio-inline"> <input type="radio"
+				ng-model="mode" value="draw" ng-change="modeChange()">Draw </label>
+            <label class="radio-inline"> <input type="radio"
+				ng-model="mode" value="modify" ng-change="modeChange()">Modify </label>
+            <label class="radio-inline"> <input type="radio"
+				ng-model="mode" value="display" ng-change="modeChange()">Display </label>-->
+    
+    <span id="autoSegmentComment" style="color:red;"></span>
+			<span style="visibility: hidden; display: none">Comment:</span>
+			<textarea class="form-control" ng-model="comment"
+				ng-change="editComment()" style="visibility: hidden; display: none"></textarea>
+    <!--<span id="autoSegmentComment" style="color:red;">Note that the mockup only works on the default image. The real interface is only accessible inside the local network of the University of Fribourg, but will be opened in future.</span>
+-->
+    
+<!-- modal to choose an image.  -->
+
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Open an image</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please type the URL of the image</p>
+        <input type="text" size="60" ng-model="imageURL"/> 
+        <br>
+        <br>
+        <p>Or browse from your local computer:</p>
+        <input id="myImage" type="file"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="openImage()">Okay</button>
+        <!-- <button type="button" class="btn btn-primary" ng-click="myFunction()">Test</button> -->
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- modal to make settings for automatic segmentation.  -->
+
+<div class="modal fade" id="myModalAutoSeg">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Settings for automatic segmentation</h4>
+      </div>
+      <div class="modal-body">
+        <p>Size of the linking rectangle:</p>
+        Width:<input type="text" size="5" ng-model="linkingRectWidth"/>        
+        &nbsp;&nbsp;&nbsp;                   
+        Height:<input type="text" size="5" ng-model="linkingRectHeight"/> 
+        <br>
+        <br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--About DivadiaWI modal-->
+<div class="modal fade" id="myModalAbout">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">About DivadiaWI</h4>
+      </div>
+      <div class="modal-body">
+        <p>DivaDiaWI</p>
+        <p>A Web-based Interface for Semi-automatic Labeling of Historical Document Images</p>
+        <p><a href="http://diuf.unifr.ch/main/diva/">DIVA group</a>, University of Fribourg, Switzerland</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
+        <!-- <button type="button" class="btn btn-primary" ng-click="myFunction()">Test</button> -->
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+	<div class="row">
+        
+        <!--moving buttons: up, bottom, left, and right-->
+        <button id="upButton" class="moveButton" style="position:absolute; top:130px; left:55px"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></button>
+        <button id="downButton" class="moveButton" style="position:absolute; top:185px; left:55px"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></button>
+        <button id="leftButton" class="moveButton" style="position:absolute; top:158px; left:28px"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+        <button id="rightButton" class="moveButton" style="position:absolute; top:158px; left:80px"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+        <!--background round button-->
+        <button id="rightButton" class="round-button"></button>
+        <!--zoom in/out buttons-->
+        <button id="zoomInButton" class="zoomButton" style="position:absolute; top:230px; left:55px"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+        <button id="zoomOutButton" class="zoomButton" style="position:absolute; top:260px; left:55px"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+        <!--<div class="round-button">OK</div>-->
+			<!--<div class="paperscript split">
+                <div class="canvas">
+                    <canvas height="800" width="1200" style="background:#e4e1e1; border:1px solid #0000FF;" id="canvas"></canvas>
+                </div>
+            </div>-->
+			<!--                <div id="scroll">-->
+			<canvas height="820" width="1920"
+				style="background: #e4e1e1; border: 1px solid #0000FF;" id="canvas" overflow: scroll></canvas>
+			<!--                </div>-->
+			<img class="hidden" id="parzival" src="d-008.png" alt="The Scream">
+
+
+	</div>
+    <span id='imgName'></span>
+    <span id='imgHeight'></span>
+    <span id='imgWidth'></span>
+    <span>The pixel you are clicking is:</span>
+    <span id='xyClick'></span>
+    <span>Mouse position:</span>
+    <span id='mousePosition'></span>
+    <div id='xmlFile'></div>

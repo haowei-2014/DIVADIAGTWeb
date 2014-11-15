@@ -1,8 +1,10 @@
-describe("expression", function() {
+describe("", function() {
+  var rootEl;
   beforeEach(function() {
-    browser.get("./examples/example-example90/index-jquery.html");
+    rootEl = browser.rootEl;
+    browser.get("examples/example-example90/index-jquery.html");
   });
-
+  
   it('should allow user expression testing', function() {
     element(by.css('.expressions button')).click();
     var lis = element(by.css('.expressions ul')).all(by.repeater('expr in exprs'));

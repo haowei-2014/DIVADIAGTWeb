@@ -1,0 +1,61 @@
+<div class="container">
+
+    <h1 align="center">User Guide</h1>
+
+<!--    <h3>The name DivaDiaWI stands for a Web-based Interface for Document Image Analysis of <a href="http://diuf.unifr.ch/main/diva/">DIVA group</a> (Document, Image and Voice Analysis group).
+DivaDiaWI is used for assisting the user to semi-automatically generate ground truth for large numbers of historical documents. DivaDiaWI incorporates two parts: automatic processing and manual edition. 
+In the automatic processing part, the system automatically draws polygons representing text lines for which manual generation of GT is quite time-consuming. Parallelly or sequentially, the user can manually edit the polygons by modifying them or directly drawing new polygons.</h3>-->
+    <p class='userGuideText'>Note that currently the functionality of automatic processing is not accessible to the public, but the manual edition works on any image that the user uploads. The full functionality of DivaDiaWI is only accessible inside the local network of the University of Fribourg, but will be opened in future. 
+        </p>
+    <ul>
+        <li>
+            <h2>Automatic processing</h2>
+        </li>
+        <!--<p class='userGuideText'>To use the automatic processing, click the button "AutoProcess". Because the automatic processing involves time-consuming image processing techniques, it normally costs a few seconds. After it is done, text lines are drawn automatically.
+        </p>-->
+        <p class='userGuideText'>Since the automatic processing is not accessible to the public currently, we don't give the guide. The user can directly use manual edition without automatic processing.
+        </p>
+        <li>
+            <h2>Manual edition</h2>
+        </li>
+        <p class='userGuideText'>The user can upload any image to manually edit. To upload an image, select File -> Open image..., or click the button "Import Img". The user can either type the url of the image, or choose the image from his/her local computer. 
+        </p>
+        <p class='userGuideText'>The user can use the mouse to drag or zoom in/out the image, just like using Google Maps.
+        </p>
+        <p class='userGuideText'>Manual edition includes two modes: manual drawing and manual modification.</p>
+            <ul>
+                <li><h3>Manual drawing</h3></li>
+                <p class='userGuideText'>The user can directly draw ground truth for different regions. In the menubar, click "Draw". Five region types and two shapes are listed. Choose one for each group. On the image, the use can draw ground truth with the mouse. Single click creates a vertex of a polygon or rectangle. Double click completes the current shape.</p>
+                <li><h3>Manual modification</h3></li>
+                    <p class='userGuideText'>When the cursor is close enough to the boundary of a region, a small yellow ball appears on the boundary. At the meantime, if the region type is text line, decoration, or comment, the region is also highlighted with light red. But the other two region types (page and text block) are not highlighted for some technical reasons. The appearance of the small yellow ball means that now the user can modify the region. If no small yellow ball is shown, the user cannot modify any region. </p>
+                    <p class='userGuideText'>Manual modification includes three types of operations: move a vertex, add a vertex, and delete a region. The location of the small yellow ball is the closest location on the boundary to the cursor. If the small yellow ball is located at a vertex, the user can move the vertex by dragging the mouse. Otherwise, by dragging the mouse, the user adds a new vertex to the boundary and moves it to a new position. Finally, the user can delete the region by press <kbd>backspace</kbd>.            
+                </p>
+            </ul>
+        <p class='userGuideText'>By default, all region types are shown after being drawn. But the user can choose only optional region tyeps to show. For example, if the user wants to see all text lines but hide the other region types, select "Show" in the menubar, and then choose "Text line". The user can choose multiple region types to show. In addition, only the shown regions can be modified again.
+        </p>
+    </ul>
+    <p class='userGuideText'>After finishing the manual edition, the user can save the ground truth in an XML file of the <a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5597587">PAGE format</a>. To do it, select File -> Save GT..., or click the button "Export GT". Later on, the user can import the ground truth to view or edit again by selecting File -> Read GT..., or by clicking the button "Import GT".
+        </p>
+    
+
+
+
+
+
+
+
+
+
+
+    <a href="#gting"> <p class='userGuideText'>Back </p></a> 
+</div>
+
+
+
+
+
+
+
+
+
+

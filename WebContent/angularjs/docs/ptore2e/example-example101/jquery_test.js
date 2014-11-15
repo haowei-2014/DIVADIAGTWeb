@@ -1,8 +1,10 @@
-describe("module", function() {
+describe("", function() {
+  var rootEl;
   beforeEach(function() {
-    browser.get("./examples/example-example101/index-jquery.html");
+    rootEl = browser.rootEl;
+    browser.get("examples/example-example101/index-jquery.html");
   });
-
+  
   it('should add Hello to the name', function() {
     expect(element(by.binding("{{ greeting }}")).getText()).toEqual('Bonjour World!');
   });

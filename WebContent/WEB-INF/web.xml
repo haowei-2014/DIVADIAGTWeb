@@ -33,4 +33,12 @@
     <servlet-name>SplitServlet</servlet-name>
     <url-pattern>/SplitServletPath</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>MergeServlet</servlet-name>
+    <servlet-class>ch.unifr.MergeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MergeServlet</servlet-name>
+    <url-pattern>/MergeServletPath</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -1,8 +1,8 @@
-<a href='http://github.com/angular/angular.js/edit/master/src/ng/filter/orderBy.js' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this doc</a>
+<a href='https://github.com/angular/angular.js/edit/v1.2.x/src/ng/filter/orderBy.js?message=docs(orderBy)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='http://github.com/angular/angular.js/tree/master/src/ng/filter/orderBy.js#L3' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/v1.2.26/src/ng/filter/orderBy.js#L3' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -88,9 +88,13 @@ correctly, make sure they are actually being saved as numbers and not strings.</
 <ul>
 <li><code>function</code>: Getter function. The result of this function will be sorted using the
 <code>&lt;</code>, <code>=</code>, <code>&gt;</code> operator.</li>
-<li><code>string</code>: An Angular expression which evaluates to an object to order by, such as &#39;name&#39;
-to sort by a property called &#39;name&#39;. Optionally prefixed with <code>+</code> or <code>-</code> to control
-ascending or descending sort order (for example, +name or -name).</li>
+<li><code>string</code>: An Angular expression. The result of this expression is used to compare elements
+(for example <code>name</code> to sort by a property called <code>name</code> or <code>name.substr(0, 3)</code> to sort by
+3 first characters of a property called <code>name</code>). The result of a constant expression
+is interpreted as a property name to be used in comparisons (for example <code>&quot;special name&quot;</code>
+to sort object by the value of their <code>special name</code> property). An expression can be
+optionally prefixed with <code>+</code> or <code>-</code> to control ascending or descending sort order
+(for example, <code>+name</code> or <code>-name</code>).</li>
 <li><code>Array</code>: An array of function or string predicates. The first predicate in the array
 is used for sorting, but when two items are equivalent, the next predicate is used.</li>
 </ul>
@@ -137,11 +141,12 @@ is used for sorting, but when two items are equivalent, the next predicate is us
   <a ng-click="openPlunkr('examples/example-example56')" class="btn pull-right">
     <i class="glyphicon glyphicon-edit">&nbsp;</i>
     Edit in Plunker</a>
+
   <div class="runnable-example"
       path="examples/example-example56"
       module="orderByExample">
 
-   
+  
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
@@ -166,11 +171,12 @@ desired parameters.</p>
   <a ng-click="openPlunkr('examples/example-example57')" class="btn pull-right">
     <i class="glyphicon glyphicon-edit">&nbsp;</i>
     Edit in Plunker</a>
+
   <div class="runnable-example"
       path="examples/example-example57"
       module="orderByExample">
 
-   
+  
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
