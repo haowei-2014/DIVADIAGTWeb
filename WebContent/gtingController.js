@@ -1,20 +1,21 @@
 myApp.controller('gtingController', function ($scope) {
-    
-    paper.install(window);
-//    window.onload = function () {  
-    canvas = document.getElementById('canvas');
-    // test if the page gting.html is already loaded.
-    if (canvas){
 
+    paper.install(window);
+    // when the gting.html is loaded, do the following.
+    $scope.onGtingLoad = function(){
         myEmail = "hao.wei@unifr.ch";
         byDefault = true;
         init();
 
         function init() {            
             paper.setup(canvas);
-            raster = new Raster(document.getElementById('parzival'));
-            raster.position = view.center;
+            raster = new Raster('parzival');
+            console.log(view.center);
+
+
+     //       console.log(raster.position);
             img = document.getElementById("parzival");
+      //      document.getElementById("openImageBtn").disabled = false; 
             // Watch out for the height of the canvas, look at it when compute the point-line distance. 
             //    varcanvas = document.getElementById("canvas");
             //   varcanvas.width = window.innerWidth * 7.5 /12;
@@ -34,9 +35,10 @@ myApp.controller('gtingController', function ($scope) {
                 imgHeight = img.naturalHeight;
                 $scope.imageURL = "load local image";
             }
-
+            
             zoom = 0.3;
             project.activeLayer.scale(zoom);
+            raster.position = view.center;
             $scope.polygon = [];
             color = 'red';
             $scope.regions = [
@@ -151,7 +153,9 @@ myApp.controller('gtingController', function ($scope) {
             currentMergePolygon1 = null;
             currentMergePolygon2 = null;
       //      $scope.$apply(); 
+            document.getElementById("canvas").style.cursor = "default";
             view.draw();
+            view.update();
         }
         
         // get the position of the pixel which is being clicked.
@@ -393,13 +397,16 @@ myApp.controller('gtingController', function ($scope) {
             // if the polygon is text line, decoration, or comment, highlight it,
             // because highlighting page or text block will sometimes make the broswer dead.
             if (currentModify != null && modeModify) {
-                if (currentModify.strokeColor.equals(colorTextLine) ||
+                /*if (currentModify.strokeColor.equals(colorTextLine) ||
                     currentModify.strokeColor.equals(colorDecoration) ||
                     currentModify.strokeColor.equals(colorComment)) {
                     currentModify.fullySelected = true;
                     currentModify.fillColor = 'red';
                     currentModify.opacity = opacityPath;
-                }
+                }*/
+                currentModify.fullySelected = true;
+                currentModify.fillColor = 'red';
+                currentModify.opacity = opacityPath;
             }
 
             previousModify = currentModify;
@@ -418,6 +425,15 @@ myApp.controller('gtingController', function ($scope) {
             else
                 return true;
         }
+        
+        function insideImage (event){
+            var xMouse = Math.round((event.point.x - raster.bounds.x) / zoom);
+            var yMouse = Math.round((event.point.y - raster.bounds.y) / zoom);
+            if (xMouse >= 0 && xMouse < imgWidth && yMouse >= 0 && yMouse < imgHeight)
+                return true;
+            else 
+                return false;
+        }
 
 
         // if you use the modify mode and insert a point, do it and update the current polygon information 
@@ -434,7 +450,7 @@ myApp.controller('gtingController', function ($scope) {
             if (currentModifyPtCircle != null)
                 currentModifyPtCircle.remove();
             // if modify point exists, check its type and the modify it.
-            if (modeModify) {
+            if (modeModify && currentModify && insideImage (event)) {
                 if (currentModifyInfo.type == "modify") {
                     if (currentModify.data.shape == "polygon")
                         currentModify.segments[currentModifyInfo.currentModifyPtIndex].point = event.point;
@@ -580,19 +596,6 @@ myApp.controller('gtingController', function ($scope) {
              clearInterval(interval);
          });
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
         // update the DOM after modifying the polygon
         function updateDOMModify() {
             $scope.polygon = [];
@@ -671,9 +674,19 @@ myApp.controller('gtingController', function ($scope) {
             // or insert a point within the existing boundary. Both are to be done with drag.
             if (outsideReservedArea(event)){
                 mousePosition.html("x: " + Math.round(event.point.x) + ", y: " + Math.round(event.point.y));
-                searchPath(event);
-                if (!modeDraw && !autoSplit && !autoMerge)
-                    searchCurrentModifyPt(event);    
+                // to search the modifying polygon, the mouse should be inside the image. 
+                if (insideImage(event)) {
+                    searchPath(event);
+                    if (!modeDraw && !autoSplit && !autoMerge)
+                        searchCurrentModifyPt(event);   
+                }   
+            } else {
+                // not highlight any area to avoid crashing the browser.
+                if (currentModify) {
+                    currentModify.fullySelected = false;
+                    currentModify.fillColor = null;
+                    currentModify.opacity = 1;
+                }
             }
         }
         
@@ -870,19 +883,84 @@ myApp.controller('gtingController', function ($scope) {
             alert(path.getOffsetOf(new Point(80, 25)));
         }
         
-        // when backspace is pressed and currentModify exists, then delete it.
-        tool.onKeyDown = function (event) {          
-        	if (event.key == 'backspace' && !$('#myModal').hasClass('in') && !$('#myModalAutoSeg').hasClass('in')){
-                event.preventDefault();
-                if (currentModify){
-                    if (currentModify.data.idXML) 
-                        updateDOMDelete(currentModify.data.idXML);
-                    else
-                        updateDOMDelete(currentModify.id);
-                    currentModify.remove();
+        
+        tool.onKeyDown = function (event) {  
+            if (!$('#myModal').hasClass('in') && !$('#myModalAutoSeg').hasClass('in')){
+                // when delete is pressed and currentModify exists, then delete it.
+                if (event.key == 'delete'){
+                    event.preventDefault();
+                    if (currentModify){
+                        if (currentModify.data.idXML) 
+                            updateDOMDelete(currentModify.data.idXML);
+                        else
+                            updateDOMDelete(currentModify.id);
+                        currentModify.remove();
+                    }
+                }
+                // when backspace is pressed, remove the last path point, just like Kai's software
+                if (event.key == 'backspace' && currentDrawPath && currentDrawPath.data.shape == "polygon" && !pathFinished){
+                    event.preventDefault();
+                    if (currentDrawPath.segments.length == 1) {
+                        currentDrawPath.remove();
+                        $scope.polygon.pop(); 
+                        currentDrawPathLastPoint = null;
+                        searchingPath.remove();
+                        pathFinished = true;
+                    } else {
+                        var indexRemoved = currentDrawPath.segments.length - 1;
+                        currentDrawPath.removeSegment(indexRemoved);
+                        $scope.polygon.pop();                        
+                        currentDrawPathLastPoint = new Point($scope.polygon[indexRemoved-1].x, 
+                                                            $scope.polygon[indexRemoved-1].y);
+                        // draw a path between the cursor and the new last vertex
+                        searchingPath.remove();
+                        searchingPath = new Path();
+                        searchingPath.strokeColor = currentDrawPath.strokeColor;
+                        searchingPath.strokeWidth = 2;
+                        var xShow = Math.round(currentDrawPathLastPoint.x * zoom + raster.bounds.x);
+                        var yShow = Math.round(currentDrawPathLastPoint.y * zoom + raster.bounds.y);
+                        searchingPath.add(new Point(xShow, yShow));
+                        searchingPath.add(searchingPoint);
+                        searchingPath.removeOnMove();
+                    }
+                    view.update();
+                }
+                /*// 
+                if (event.key == 'backspace' && hasLastChange) {
+                    event.preventDefault();
+                    alert("The page will be redirected back. But you haven't save the ground truth!");
+                }*/
+            }
+            
+        }
+        
+        // Prevent the backspace key from navigating back. Refer to
+        // http://stackoverflow.com/questions/1495219/how-can-i-prevent-the-backspace-key-from-navigating-back
+        $(document).unbind('keydown').bind('keydown', function (event) {
+            var doPrevent = false;
+            if (event.keyCode === 8) {
+                var d = event.srcElement || event.target;
+                if ((d.tagName.toUpperCase() === 'INPUT' && 
+                     (
+                         d.type.toUpperCase() === 'TEXT' ||
+                         d.type.toUpperCase() === 'PASSWORD' || 
+                         d.type.toUpperCase() === 'FILE' || 
+                         d.type.toUpperCase() === 'EMAIL' || 
+                         d.type.toUpperCase() === 'SEARCH' || 
+                         d.type.toUpperCase() === 'DATE' )
+                     ) || 
+                     d.tagName.toUpperCase() === 'TEXTAREA') {
+                    doPrevent = d.readOnly || d.disabled;
+                }
+                else {
+                    doPrevent = true;
                 }
             }
-        }
+
+            if (doPrevent) {
+                event.preventDefault();
+            }
+        });
 
 
         $scope.removePolygon = function () {
@@ -1130,8 +1208,10 @@ myApp.controller('gtingController', function ($scope) {
 
         $scope.exportGT = function () {
             if (xmlDoc != null) {
-                if (hasLastChange)
+                if (hasLastChange){
                     editLastChange();
+                    hasLastChange = false;
+                }
                 if (currentModify != null) {
                     updateDOMModify();
                 }
@@ -1141,7 +1221,7 @@ myApp.controller('gtingController', function ($scope) {
                     type: 'text/xml'
                 });
                 //       var fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
-                var fileNameToSaveAs = imgName.substring(0, imgName.indexOf('.')) + "_" + myEmail + ".xml";
+                var fileNameToSaveAs = imgName + "_" + "gt" + ".xml";
                 var downloadLink = document.createElement("a");
                 downloadLink.download = fileNameToSaveAs;
                 downloadLink.innerHTML = "Download File";
@@ -1193,10 +1273,11 @@ myApp.controller('gtingController', function ($scope) {
                 	imgName = fileToLoad.name;
                     $('#myModal').modal('hide');
                     byDefault = false;
-                    $scope.imageURL = "load local image";
+           //         $scope.imageURL = "load local image";
                     init();
                 };
                 fileReader.readAsDataURL(fileToLoad);
+  //              document.getElementById("openImageBtn").disabled = true; 
                 //       var fileText = fileReader.result;
             });
         });
@@ -1223,9 +1304,7 @@ myApp.controller('gtingController', function ($scope) {
                     init();                
             	}
             	img.src= $scope.imageURL;
-        	} else {
-        		
-        	}
+        	} 
         }
         
         $scope.myFunction = function () {
@@ -1280,7 +1359,7 @@ myApp.controller('gtingController', function ($scope) {
                     currentDrawPath.strokeColor = 'cyan';
                     break;
                 }
-                currentDrawPath.strokeWidth = 4; //2
+                currentDrawPath.strokeWidth = 2; //2
                 currentDrawPath.data.idXML = textRegions[i].getAttribute("id");
                 currentDrawPath.data.comments = textRegions[i].getAttribute("comments");
                 currentDrawPath.closed = true;
@@ -1388,7 +1467,8 @@ myApp.controller('gtingController', function ($scope) {
                 searchingRectangle.strokeWidth = 2;
                 searchingRectangle.removeOnMove();
             } else if (currentDrawPath.data.shape == "polygon" && currentDrawPathLastPoint) {
-                var searchingPath = new Path();
+                // make it glabal in case that the backspace is pressed. See the function about backspace
+                searchingPath = new Path();
                 searchingPath.strokeColor = currentDrawPath.strokeColor;
                 searchingPath.strokeWidth = 2;
                 var xShow = Math.round(currentDrawPathLastPoint.x * zoom + raster.bounds.x);
@@ -1396,6 +1476,8 @@ myApp.controller('gtingController', function ($scope) {
                 searchingPath.add(new Point(xShow, yShow));
                 searchingPath.add(event.point);
                 searchingPath.removeOnMove();
+                // keep the point in case that the user deletes the last point when backspace is pressed.
+                searchingPoint = event.point;
             }
         }
 

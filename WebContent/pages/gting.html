@@ -1,3 +1,4 @@
+<div id="gtingPage" onload="loadGTingPage()">
 <div class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
         <div class="navbar-collapse collapse">
@@ -91,14 +92,14 @@
             <button type="button" class="btn btn-primary"
 					ng-click="removePolygon()" style="visibility: hidden; display: none">Remove</button>
 			<span title="Select a rectangle enclosing a text block. After selection, the system will automatically extract text lines. So please wait for a few seconds.">
-				<button id="selectTextBlock" type="button" class="btn btn-primary" ng-click="selectTextBlock()">AutoSeg</button>
+				<button id="selectTextBlock" type="button" class="btn btn-success autoBtn" ng-click="selectTextBlock()">AutoSeg</button>
 			</span>
 			<!-- ng-click="selectTextBlock()" -->
 			<span title="Click this button, and click the position to split a polygon.">
-				<button id="splitPolygon" type="button" class="btn btn-primary" ng-click="splitPolygon()">Split</button>
+				<button id="splitPolygon" type="button" class="btn btn-success autoBtn" ng-click="splitPolygon()">Split</button>
 			</span>
 			<span title="Click this button, and click two polygons to be merged.">
-				<button id="splitPolygon" type="button" class="btn btn-primary" ng-click="mergePolygons()">Merge</button>
+				<button id="splitPolygon" type="button" class="btn btn-success autoBtn" ng-click="mergePolygons()">Merge</button>
 			</span>
 			<span id="userGuideSpan"><a href="#userguide" target="_blank" id="userGuide">User Guide</a>&nbsp;&nbsp;&nbsp;</span>
 			
@@ -223,3 +224,4 @@
     <span>Mouse position:</span>
     <span id='mousePosition'></span>
     <div id='xmlFile'></div>
+    </div>

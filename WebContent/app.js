@@ -23,7 +23,7 @@
             // route for the contact page
             .when('/userguide', {
                 templateUrl : 'pages/userguide.html',
-                controller  : 'gtingController'
+                controller  : 'userGuideController'
             });
     });
 
