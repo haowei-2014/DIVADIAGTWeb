@@ -12,8 +12,14 @@ function lineDistance(point1, point2) {
     return Math.sqrt(xs + ys);
 }
 
-
-
+// check the point p is in between points p1 and p2
+function pointInBetween(p, p1, p2){
+    if (p.x >= p1.x && p.x <= p2.x && p.y >= p1.y && p.y <= p2.y) return true;
+    if (p.x >= p2.x && p.x <= p1.x && p.y >= p2.y && p.y <= p1.y) return true;
+    if (p.x >= p1.x && p.x <= p2.x && p.y <= p1.y && p.y >= p2.y) return true;
+    if (p.x >= p2.x && p.x <= p1.x && p.y <= p2.y && p.y >= p1.y) return true;
+    return false;
+}
 
 // distance between a point and a line
 function pointLineDistance(point1, point2, cursor, widthCanvas) {

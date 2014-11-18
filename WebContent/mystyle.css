@@ -37,7 +37,12 @@
 }
 
 #userGuideSpan{
+    position:absolute; 
+    top:60px; 
+    left:1750px;
     float:right;
+    margin-top: 0px;
+    padding-bottom: 0px;
 }
 
 .autoBtn{
@@ -97,4 +102,28 @@
     /*font-weight: bold;*/
 }
 
+.pagination{
+    position:absolute; 
+    top:50px; 
+    left:1600px;
+    height:20px; 
+    width:300px;
+    padding-top: 0px;
+    margin-top: 5px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    float:right;
+}
 
+#pageExamples{
+    position:absolute; 
+    top:60px; 
+    left:1500px;
+}
+
+.navbar{
+    padding-top: 0px;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}

@@ -2,7 +2,7 @@ myApp.controller('gtingController', function ($scope) {
 
     paper.install(window);
     // when the gting.html is loaded, do the following.
-    $scope.onGtingLoad = function(){
+
         myEmail = "hao.wei@unifr.ch";
         byDefault = true;
         init();
@@ -15,7 +15,6 @@ myApp.controller('gtingController', function ($scope) {
 
      //       console.log(raster.position);
             img = document.getElementById("parzival");
-      //      document.getElementById("openImageBtn").disabled = false; 
             // Watch out for the height of the canvas, look at it when compute the point-line distance. 
             //    varcanvas = document.getElementById("canvas");
             //   varcanvas.width = window.innerWidth * 7.5 /12;
@@ -29,12 +28,14 @@ myApp.controller('gtingController', function ($scope) {
                 imgName = "d-008.png";
                 imgWidth = 2000;
                 imgHeight = 3008;
-                $scope.imageURL = "https://diuf.unifr.ch/diva/divadiaweb/d-008.png";
+ //               $scope.imageURL = "https://diuf.unifr.ch/diva/divadiaweb/d-008.png";
+ //               $("#imageURLModal").val("load url");
             } else {
                 imgWidth = img.naturalWidth;
                 imgHeight = img.naturalHeight;
-                $scope.imageURL = "load local image";
+                $("#imageURLModal").val("");
             }
+            byDefault = true;
             
             zoom = 0.3;
             project.activeLayer.scale(zoom);
@@ -126,8 +127,16 @@ myApp.controller('gtingController', function ($scope) {
             drag = false;
             hasLastChange = false;
             
+            // initial region is text line, and initial shape is polygon
             drawRegionGlyph = document.getElementById("drawTextLineGlyph");
             drawShapeGlyph = document.getElementById("drawPolygonGlyph");
+            document.getElementById("drawTextLineGlyph").className = "glyphicon glyphicon-ok";
+            document.getElementById("drawTextBlockGlyph").className = "hidden";
+            document.getElementById("drawCommentGlyph").className = "hidden";
+            document.getElementById("drawDecorationGlyph").className = "hidden";
+            document.getElementById("drawPageGlyph").className = "hidden";
+            document.getElementById("drawPolygonGlyph").className = "glyphicon glyphicon-ok";
+            document.getElementById("drawRectangleGlyph").className = "hidden";
             shape = "polygon";
             showTextLineFlag = true;
             showTextBlockFlag = true;
@@ -154,6 +163,9 @@ myApp.controller('gtingController', function ($scope) {
             currentMergePolygon2 = null;
       //      $scope.$apply(); 
             document.getElementById("canvas").style.cursor = "default";
+            
+            $scope.totalItems = 64;
+            $scope.currentPage = 4;
             view.draw();
             view.update();
         }
@@ -246,6 +258,7 @@ myApp.controller('gtingController', function ($scope) {
             else if(singleClick) {
                 modeDraw = true;
                 if (pathFinished) {
+                    // if draws a polygon
                     if (shape == "polygon") {
                         currentDrawPath = new Path();
                         currentDrawPath.add(event.point);
@@ -256,7 +269,7 @@ myApp.controller('gtingController', function ($scope) {
                             x: xClick,
                             y: yClick
                         });
-                    } else {
+                    } else { // if draws a rectangle
                         currentDrawPath = new Path.Rectangle(event.point, event.point);
                         fromRectangle = new Point(xClick, yClick);
                         currentDrawPath.data.shape = "rectangle";
@@ -267,15 +280,23 @@ myApp.controller('gtingController', function ($scope) {
                     pathFinished = false;
                 } else {
                     if (currentDrawPath.data.shape == "polygon") {
-                        currentDrawPath.add(event.point);
-                        currentDrawPathLastPoint = new Point(xClick, yClick);
-                        $(document).ready(function () {
-                            $("#xyClick").html("x: " + xClick + ", y: " + yClick + ". ");
-                        });
-                        $scope.polygon.push({
-                            x: xClick,
-                            y: yClick
-                        });
+                        // distance between the current click and the begining point of the polygon
+                        var clickToBeginning = lineDistance(new Point(xClick, yClick), new Point($scope.polygon[0].x, $scope.polygon[0].y));
+                        // if current click is close enough to the begining point, then finish drawing.
+                        if (clickToBeginning < 10){
+                            closeCurrentDrawPolygon();
+                            searchingPath.remove();
+                        } else {
+                            currentDrawPath.add(event.point);
+                            currentDrawPathLastPoint = new Point(xClick, yClick);
+                            $(document).ready(function () {
+                                $("#xyClick").html("x: " + xClick + ", y: " + yClick + ". ");
+                            });
+                            $scope.polygon.push({
+                                x: xClick,
+                                y: yClick
+                            });
+                        }
                     } else {
                         currentDrawPath.remove;
                         var xShow = Math.round(fromRectangle.x * zoom + raster.bounds.x);
@@ -333,16 +354,22 @@ myApp.controller('gtingController', function ($scope) {
 
             // if double click, then the path is finished.
             if (doubleClick && currentDrawPath.data.shape == "polygon") {
-                currentDrawPath.closed = true;
-                pathFinished = true;
-                modeDraw = false;
-                currentDrawPathLastPoint = null;
-                if (xmlDoc == null)
-                    initDom();
-                updateDOMDraw();
+                closeCurrentDrawPolygon();
             }
             $scope.$apply();
         }
+    
+        // finish drawing the current polygon
+        function closeCurrentDrawPolygon(){
+            currentDrawPath.closed = true;
+            pathFinished = true;
+            modeDraw = false;
+            currentDrawPathLastPoint = null;
+            if (xmlDoc == null)
+                initDom();
+            updateDOMDraw();
+        }
+    
         
         function findSplitPolygon (event){
         	splitPolygon = [];
@@ -649,10 +676,13 @@ myApp.controller('gtingController', function ($scope) {
                 newPt.setAttribute("x", $scope.polygon[i].x);
                 newCoords.appendChild(newPt);
             }
-            if (currentTextRegion == null) {
+            /*if (currentTextRegion == null) {
                 alert("currentTextRegion is null!");
             } else
+                currentTextRegion.appendChild(newCoords);*/
+            if (currentTextRegion != null) {
                 currentTextRegion.appendChild(newCoords);
+            } 
             hasLastChange = true;
         }
         
@@ -739,15 +769,18 @@ myApp.controller('gtingController', function ($scope) {
                         var j = i+1;
                         if (i == (currentModifyPtsLength-1))
                             j = 0;
-                        var path = new Path.Rectangle(currentModifyPts[i], currentModifyPts[j]);
-                        if (path.contains(currentModifyPt)){
+         //               var path = new Path.Rectangle(currentModifyPts[i], currentModifyPts[j]);
+                        
+                        if (pointInBetween(currentModifyPt, currentModifyPts[i], currentModifyPts[j])){
                             currentModifyInfo.currentModifyPtIndex = i;
                             currentModifyInfo.currentModifyPt = currentModifyPt;
                             currentModifyInfo.type = "insert";
-                            path.remove();
+                  //          path.remove();
                             break;
                         }
-                        path.remove();
+                        /*if (path.contains(currentModifyPt)){
+                        }
+                        path.remove();*/
                     }                    
                 }
                 // make the yellow circle centered at the currentModifyPt 
@@ -872,15 +905,18 @@ myApp.controller('gtingController', function ($scope) {
 
         $scope.test = function () {
             var path = new Path();
-            path.strokeColor = 'black';
-            path.add(new Point(30, 75));
-            path.add(new Point(30, 25));
-            path.add(new Point(80, 25));
-            path.add(new Point(80, 75));
-            path.closed = true;
-
-            
-            alert(path.getOffsetOf(new Point(80, 25)));
+            path.strokeColor = 'red';
+            path.add(new Point(100, 200));
+            view.draw();
+            path.add(new Point(150, 250));
+            view.draw();
+            path.add(new Point(200, 250));
+            view.draw();
+            path.add(new Point(100, 300));
+            view.draw();
+            path.closed = true;            
+            path.insert(4, new Point(120, 25));
+            view.draw();
         }
         
         
@@ -1270,13 +1306,13 @@ myApp.controller('gtingController', function ($scope) {
                 var fileReader = new FileReader();
                 fileReader.onload = function (event) {
                 	document.getElementById("parzival").src = event.target.result;
-                	imgName = fileToLoad.name;
-                    $('#myModal').modal('hide');
+                	imgName = fileToLoad.name; 
                     byDefault = false;
            //         $scope.imageURL = "load local image";
                     init();
                 };
                 fileReader.readAsDataURL(fileToLoad);
+                $('#myModal').modal('hide');
   //              document.getElementById("openImageBtn").disabled = true; 
                 //       var fileText = fileReader.result;
             });
@@ -1300,12 +1336,34 @@ myApp.controller('gtingController', function ($scope) {
             	var img = new Image();
             	img.onload = function() {
             		document.getElementById("parzival").src= $scope.imageURL;
-                    byDefault = false;
+                    $("#imageURLModal").val($scope.imageURL);
                     init();                
             	}
             	img.src= $scope.imageURL;
         	} 
         }
+        
+        $scope.pageChanged = function(pageID) {
+            if (pageID == "1"){
+                $scope.imageURL = "https://diuf.unifr.ch/diva/divadiaweb/d-008.png";
+                $('#page1').addClass('active');
+                $('#page2').removeClass('active');
+                $('#page3').removeClass('active');
+            }
+            if (pageID == "2"){
+                $scope.imageURL = "https://diuf.unifr.ch/diva/divadiaweb/csg562-022.png";
+                $('#page2').addClass('active');
+                $('#page1').removeClass('active');
+                $('#page3').removeClass('active');
+            } 
+            if (pageID == "3"){
+                $scope.imageURL = "https://diuf.unifr.ch/diva/divadiaweb/308.png";
+                $('#page3').addClass('active');
+                $('#page1').removeClass('active');
+                $('#page2').removeClass('active');
+            }
+            $scope.openImage();
+        };
         
         $scope.myFunction = function () {
             alert("test modal");
@@ -1729,7 +1787,7 @@ myApp.controller('gtingController', function ($scope) {
 			}
 		}
         
-    }
+
 });
 
 

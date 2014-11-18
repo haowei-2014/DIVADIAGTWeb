@@ -2,7 +2,7 @@
 
     // create the module and name it scotchApp
         // also include ngRoute for all our routing needs
-    var myApp = angular.module('myApp', ['ngRoute']);
+    var myApp = angular.module('myApp', ['ngRoute','ui.bootstrap']);
 
     // configure our routes
     myApp.config(function($routeProvider) {

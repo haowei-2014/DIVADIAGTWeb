@@ -1,4 +1,3 @@
-<div id="gtingPage" onload="loadGTingPage()">
 <div class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
         <div class="navbar-collapse collapse">
@@ -44,8 +43,8 @@
                     <a href="" class="dropdown-toggle" data-toggle="dropdown">Settings</a>
                     <ul class="dropdown-menu" role="menu">
                         <li id="autoSegSettings" data-toggle="modal" data-target="#myModalAutoSeg" ><a href="">Segmentation</a></li>
-                        <li id="autoSplitSettings" ng-click="showTextLine()"><a href="">Split</a></li>
-                        <li id="autoMergeSettings" ng-click="showTextLine()"><a href="">Merge</a></li>
+                        <!--<li id="autoSplitSettings"><a href="">Split</a></li>
+                        <li id="autoMergeSettings"><a href="">Merge</a></li>-->
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -70,23 +69,29 @@
     <!--/.container-fluid -->
 </div>
 
+
 <!--<select ng-model="myShape"
 				ng-options="shape.name for shape in shapes" ></select>
     <select ng-model="myRegion"
 				ng-options="region.name for region in regions" ></select>-->
+    <span title="Open an image">
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Import
 				Img </button>
+    </span>
     <input id="myImg" type="file"
 				style="visibility: hidden; display: none" />
+    <span title="Import ground truth">
 			<button type="button" class="btn btn-primary" ng-click="importGT()">Import
 				GT</button>
+    </span>
 			<input id="myInput" type="file"
 				style="visibility: hidden; display: none" />
+    <span title="Export ground truth">
 			<button type="button" class="btn btn-primary" ng-click="exportGT()">Export
-				GT</button>
+                GT</button></span>
 			<button type="button" id="showInfoButton" class="btn btn-primary btnTop"
 				ng-click="showImgInfo()" style="visibility: hidden; display: none">Hide Info</button>
-			<button type="button" id="testButton" class="btn btn-primary btnTop" ng-click="test()" style="visibility: hidden; display: none">test</button>
+			<button type="button" id="testButton" class="btn btn-primary btnTop" ng-click="test()">test</button>
 			<button id="autoSegment" type="button" class="btn btn-primary" style="visibility: hidden; display: none">Automatic</button>
 			<button id="loadDatabase" type="button" class="btn btn-primary" style="visibility: hidden; display: none">LoadDatabase</button>
             <button type="button" class="btn btn-primary"
@@ -102,6 +107,15 @@
 				<button id="splitPolygon" type="button" class="btn btn-success autoBtn" ng-click="mergePolygons()">Merge</button>
 			</span>
 			<span id="userGuideSpan"><a href="#userguide" target="_blank" id="userGuide">User Guide</a>&nbsp;&nbsp;&nbsp;</span>
+    
+    <span id="pageExamples">Example pages</span>
+
+    <ul class="pagination">
+    <li id="page1" class="active" ng-click="pageChanged(1)"><a href="">1</a></li>
+    <li id="page2" ng-click="pageChanged(2)"><a href="">2</a></li>
+    <li id="page3" ng-click="pageChanged(3)"><a href="">3</a></li>
+  </ul>
+
 			
             <!--<span>Working mode:</span>
 			<label class="radio-inline"> <input type="radio"
@@ -117,7 +131,8 @@
 				ng-change="editComment()" style="visibility: hidden; display: none"></textarea>
     <!--<span id="autoSegmentComment" style="color:red;">Note that the mockup only works on the default image. The real interface is only accessible inside the local network of the University of Fribourg, but will be opened in future.</span>
 -->
-    
+
+
 <!-- modal to choose an image.  -->
 
 <div class="modal fade" id="myModal">
@@ -129,14 +144,14 @@
       </div>
       <div class="modal-body">
         <p>Please type the URL of the image</p>
-        <input type="text" size="60" ng-model="imageURL"/> 
+        <input type="text" size="60" id="imageURLModal"/> 
         <br>
         <br>
         <p>Or browse from your local computer:</p>
         <input id="myImage" type="file"/>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="openImage()">Okay</button>
+        <button id="openImageBtn" type="button" class="btn btn-primary" data-dismiss="modal" ng-click="openImage()">Okay</button>
         <!-- <button type="button" class="btn btn-primary" ng-click="myFunction()">Test</button> -->
       </div>
     </div><!-- /.modal-content -->
@@ -210,7 +225,7 @@
             </div>-->
 			<!--                <div id="scroll">-->
 			<canvas height="820" width="1920"
-				style="background: #e4e1e1; border: 1px solid #0000FF;" id="canvas" overflow: scroll></canvas>
+				style="background: #F8F8FF; border: 1px solid #0000FF;" id="canvas" overflow: scroll></canvas>
 			<!--                </div>-->
 			<img class="hidden" id="parzival" src="d-008.png" alt="The Scream">
 
@@ -224,4 +239,4 @@
     <span>Mouse position:</span>
     <span id='mousePosition'></span>
     <div id='xmlFile'></div>
-    </div>
+   
