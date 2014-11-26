@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import sun.misc.BASE64Decoder;
+import ch.unifr.gabor.CommonFunctions;
 import ch.unifr.textblock.Block;
 import ch.unifr.textblock.BlockRetriever;
 
@@ -22,10 +23,18 @@ import com.google.gson.Gson;
 
 public class Step1Projection {
 	
-	public HashMap<String, List<int[][]>> results;
-	private BufferedImage image = null; 
+	public static HashMap<String, List<int[][]>> results;
+	public static BufferedImage image = null; 
+	public static String filePath = null;
+	public static String gaborInput = null;
 	
-	public Step1Projection(String imageURL) {	
+	public Step1Projection(String imageURL, String imageName, int top, int left) {	
+		filePath = System.getProperty("user.dir") + File.separator + "tmpData" + File.separator;
+		gaborInput = imageName.replaceAll(File.separator, "") + "_" + top + "_" + left +"_GaborInput.png";	
+		// delete old data
+		File folderDelete = new File (filePath);
+		CommonFunctions.deleteFolder(folderDelete);
+		
 		if (imageURL.startsWith("data:image")){
 			imageURL = imageURL.replace("data:image/png;base64,", "");
 			
@@ -36,8 +45,8 @@ public class Step1Projection {
 	            ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
 	            image = ImageIO.read(bis);
 	            bis.close();          
-	            File outputfile = new File("saved.png");
-	            ImageIO.write(image, "png", outputfile);
+//	            File outputfile = new File("saved.png");
+//	            ImageIO.write(image, "png", outputfile);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -60,7 +69,7 @@ public class Step1Projection {
         System.out.println("Width is: " + w + ", Height is: " + h);
 	}
 	
-	public HashMap<String, List<int[][]>> getResults(){
+	public static HashMap<String, List<int[][]>> getResults(){		
 		ArrayList<Block> blockList = BlockRetriever.start(image);
 		results = new HashMap<String, List<int[][]>>();	
 		List<int[][]> textBlocksList = new ArrayList<int[][]>();
@@ -78,20 +87,23 @@ public class Step1Projection {
 		return results;
 	}
 	
-	public void cropTextBlock(int top, int bottom, int left, int right){	
+	public static void cropTextBlock(int top, int bottom, int left, int right){	
 		BufferedImage textBlock = image.getSubimage(left, top, right-left, bottom-top);
-		try {
-		    File outputfile = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/manualTextBlockInput.png");
+		try {			
+		    File outputfile = new File(filePath + gaborInput);
+		    if (!outputfile.getParentFile().exists())
+		    	outputfile.getParentFile().mkdirs();
+		    if (!outputfile.exists())
+		    	outputfile.createNewFile();
 		    ImageIO.write(textBlock, "png", outputfile);
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
 	}
 	
-	public static void main(String[] args){
-		Step1Projection projectMethod = new Step1Projection("");
-		HashMap<String, List<int[][]>> results = projectMethod.getResults();
+	/*public static void main(String[] args){
+		HashMap<String, List<int[][]>> results = getResults();
 		System.out.println(results);
-	}
+	}*/
 
 }

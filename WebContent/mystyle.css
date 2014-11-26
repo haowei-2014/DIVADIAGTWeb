@@ -34,15 +34,22 @@
     font-weight:bold;
     color: green;
     text-decoration:underline;
+    padding-top: 20px;
+    padding-right: 0px;
+    padding-bottom: 20px;
+    padding-left: 10px;
 }
 
 #userGuideSpan{
     position:absolute; 
-    top:60px; 
-    left:1750px;
+    top:50px; 
+    left:1720px;
     float:right;
-    margin-top: 0px;
-    padding-bottom: 0px;
+    margin: 0px 0px;
+    padding-top: 20px;
+    padding-right: 0px;
+    padding-bottom: 20px;
+    padding-left: 10px;
 }
 
 .autoBtn{

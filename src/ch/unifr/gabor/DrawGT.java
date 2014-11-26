@@ -70,7 +70,7 @@ public class DrawGT {
 				}
 			}
 		}
-		int interval = 10; // pick up points every interval points
+		int interval = 20; // pick up points every interval points
 		int newNumberPoints = (numberPoints - 1) / interval + 1; // number of boundary points on the new polygon
 		int[] xNewPoints = new int[(numberPoints - 1) / interval + 1];
 		int[] yNewPoints = new int[(numberPoints - 1) / interval + 1];

@@ -1,46 +1,40 @@
-myApp.controller('gtingController', function ($scope) {
+angular.module('myApp').controller('gtingController', ['$scope', 'ModalService', function($scope, ModalService) {
+    
+    
+    // scotchApp.controller('aboutController', ['$scope', 'ModalService', function($scope, ModalService) {
 
     paper.install(window);
-    // when the gting.html is loaded, do the following.
-
-        myEmail = "hao.wei@unifr.ch";
+    tool = new Tool();
+        myEmail = "";
         byDefault = true;
-        init();
+        var img = new Image();
+        img.onload = function() {
+             document.getElementById("parzival").src= "https://diuf.unifr.ch/diva/divadiaweb/d-008.png";
+             $("#imageURLModal").val("https://diuf.unifr.ch/diva/divadiaweb/d-008.png");
+             init();                
+        }
+        img.src= "https://diuf.unifr.ch/diva/divadiaweb/d-008.png";
 
         function init() {            
             paper.setup(canvas);
             raster = new Raster('parzival');
-            console.log(view.center);
-
-
-     //       console.log(raster.position);
-            img = document.getElementById("parzival");
-            // Watch out for the height of the canvas, look at it when compute the point-line distance. 
-            //    varcanvas = document.getElementById("canvas");
-            //   varcanvas.width = window.innerWidth * 7.5 /12;
-            //   alert("window.innerWidth: " + window.innerWidth);
-            //   alert("canvas width: " + varcanvas.width);
-            imgName = "";
-            imgWidth = 0;
-            imgHeight = 0;
-            
+            img = document.getElementById("parzival");            
             if (byDefault) {
-                imgName = "d-008.png";
-                imgWidth = 2000;
-                imgHeight = 3008;
- //               $scope.imageURL = "https://diuf.unifr.ch/diva/divadiaweb/d-008.png";
- //               $("#imageURLModal").val("load url");
-            } else {
-                imgWidth = img.naturalWidth;
-                imgHeight = img.naturalHeight;
+                imgName = $("#imageURLModal").val();
+//                $("#imageURLModal").val("load url");
+            } else { 
+                imgName = "";
                 $("#imageURLModal").val("");
             }
+            imgWidth = img.naturalWidth;
+            imgHeight = img.naturalHeight;
             byDefault = true;
             
             zoom = 0.3;
             project.activeLayer.scale(zoom);
             raster.position = view.center;
-            $scope.polygon = [];
+            $scope.polygon = [];  // vertexes of the polygon drawn manually
+            vertexesAuto = [];  // vertexes of the polygon automatically drawn
             color = 'red';
             $scope.regions = [
                 {
@@ -81,6 +75,7 @@ myApp.controller('gtingController', function ($scope) {
             $scope.displayPage = true;
       //      $scope.$apply();
             currentDrawPath = new Path();
+            currentDrawPathAuto = new Path();
             currentDrawPath.strokeColor = color;
             currentDrawPath.strokeWidth = 4;  // 2
             currentDrawPathLastPoint = null;
@@ -88,8 +83,11 @@ myApp.controller('gtingController', function ($scope) {
             opacityPath = 0.1;
             lastClick = 0;
             pathFinished = true;
-            tool = new Tool();
+            // ToleranceDistance is very important. It decides if a drag is a quick click or a normal drag 
+            toleranceDistance = 20;  
+            searchingPath = new Path();
             xmlDoc = null;
+            xmlName = "";
             mousePosition = $("#mousePosition");
             srcImage = null;
 
@@ -151,6 +149,7 @@ myApp.controller('gtingController', function ($scope) {
             
             autoTextline = false;
             autoSplit = false;
+            autoTextLineRectangle = null; // save the text block rectangle
             splitPolygon = [];
             currentSplitPolygon = null;
             $scope.linkingRectWidth = 80;
@@ -179,11 +178,22 @@ myApp.controller('gtingController', function ($scope) {
             drag = false;
             var d = new Date();
             var t = d.getTime();
-            if (event.delta.length != 0) {
-                drag = true;
-                singleClick = false;
-                doubleClick = false;
-        //        document.getElementById("canvas").style.cursor = "auto";
+            if (event.delta.length != 0) {      
+                // If the click is very quick, it turns to be a little drag. If the distance between mouseup and
+                // mousedown is small enough, the little drag is considered a click.
+               if (!modeModify && event.delta.length < toleranceDistance){
+                    console.log("single");
+                    singleClick = true;
+                    doubleClick = false;
+                    drag = false;
+                    if (searchingPath)
+                        searchingPath.remove();
+                } else {
+                    drag = true;
+                    singleClick = false;
+                    doubleClick = false;
+                    document.getElementById("canvas").style.cursor = "auto";
+                }
             } else if (t - lastClick < 200) {
                 console.log("double"); // double is a single plus a double, bad implementation!
                 doubleClick = true;
@@ -227,7 +237,7 @@ myApp.controller('gtingController', function ($scope) {
             else if (autoSplit && singleClick) {
             	splitPolygon = findSplitPolygon(event);
             	if (splitPolygon.length == 0)
-            		alert ("Please put the cursor inside a text line region!");
+            		alert ("Please click inside a text line region!");
             	else {
             		autoSplitPolygon(splitPolygon, xClick, yClick);
             		autoSplit = false;
@@ -237,17 +247,19 @@ myApp.controller('gtingController', function ($scope) {
             	mergeCount++; 
             	if (mergeCount == 1){
             		mergePolygon1 = findMergePolygon(event, "first");
-            		if (mergePolygon1.length == 0){
-                		alert ("Please put the cursor inside a text line region!");
+            		if (mergePolygon1 == null || mergePolygon1.length == 0){
+                		alert ("Please click inside a text line region!");
                 		mergeCount--;  // redo it
                 	}
             	}    	
             	if (mergeCount == 2){
             		mergePolygon2 = findMergePolygon(event, "second");
-            		if (mergePolygon2.length == 0){
-                		alert ("Please put the cursor inside a text line region!");
+            		if (mergePolygon2 == null || mergePolygon2.length == 0){
+                		alert ("Please click inside a text line region!");
                 		mergeCount--;
-                	} else {
+                	} if (JSON.stringify(mergePolygon1) == JSON.stringify(mergePolygon2)) {
+                        alert ("You are clicking the same polygon!");
+                    }else {
                 		mergeCount = 0;  // prepare for new merge operation
                 		autoMergePolygons (mergePolygon1, mergePolygon2); 
                 		autoMerge = false;
@@ -336,14 +348,19 @@ myApp.controller('gtingController', function ($scope) {
                             y: yClick
                         });
                         $scope.$apply();
-                        if (xmlDoc == null)
-                            initDom();
-                        updateDOMDraw();
                         // send ajax to server to extract text lines. Number 17 is the pixels to pad the image.
                         if (autoTextline){
-                        	autoExtractTextLines (fromRectangle.y-17, yClick+17, fromRectangle.x-17, xClick+17);
-                        	autoTextline = false; 
+                            autoExtractTextLines($scope.polygon);
                         	document.getElementById("canvas").style.cursor = "auto";
+                            autoTextLineRectangle = currentDrawPath;
+                            autoTextline = false;
+                            // reset the drawing region and shape
+                            $scope.drawPolygon();
+				            $scope.drawTextLine();
+                        } else {
+                            if (xmlDoc == null)
+                                initDom();
+                            updateDOMDraw("manual");
                         }
                         fromRectangle = null;
                         modeDraw = false;
@@ -367,7 +384,7 @@ myApp.controller('gtingController', function ($scope) {
             currentDrawPathLastPoint = null;
             if (xmlDoc == null)
                 initDom();
-            updateDOMDraw();
+            updateDOMDraw("manual");
         }
     
         
@@ -501,17 +518,20 @@ myApp.controller('gtingController', function ($scope) {
                     currentModify.segments[currentModifyInfo.currentModifyPtIndex + 1].point = event.point;
                 }
                 updateDOMModify();
-            } /*else { // pan the image
-                document.getElementById("canvas").style.cursor = "all-scroll";
-                var vector = event.delta;
-                project.activeLayer.position = new Point(project.activeLayer.position.x + vector.x,
-                    project.activeLayer.position.y + vector.y);
-            }*/
+            } else { 
+                // If modeModify is false, and the distance between the current mouse position and 
+                // the mouse down position is big enough, drag it.
+                if (!modeModify && lineDistance(event.point, event.downPoint) > toleranceDistance){
+               //     console.log(lineDistance(event.point, event.downPoint));
+                    // pan the image
+                    document.getElementById("canvas").style.cursor = "move";
+                    var vector = event.delta;
+                    project.activeLayer.position = new Point(project.activeLayer.position.x + vector.x,
+                        project.activeLayer.position.y + vector.y);
+                }
+            }
         }
-        
-        
-        
-        
+
 
          var interval;
          var upButton = document.getElementById("upButton");
@@ -582,26 +602,10 @@ myApp.controller('gtingController', function ($scope) {
                     zoom = zoom * scaleFactor;
                     project.activeLayer.scale(scaleFactor, new Point(xZoomCenter, yZoomCenter));
                 }
-                
-                 
-                 
-                 
-      /*           var xClick = Math.round((event.point.x - raster.bounds.x) / zoom);
-            var yClick = Math.round((event.point.y - raster.bounds.y) / zoom);*/
-                 
-                 
-                 
-                 
-                 
-                 
-                 
-                 
-                 
-                 
-                 
                 view.update();
              }, 50); // 500ms between each frame
          });
+             
          zoomInButton.addEventListener('mouseup', function (e) {
              clearInterval(interval);
          });
@@ -707,7 +711,7 @@ myApp.controller('gtingController', function ($scope) {
                 // to search the modifying polygon, the mouse should be inside the image. 
                 if (insideImage(event)) {
                     searchPath(event);
-                    if (!modeDraw && !autoSplit && !autoMerge)
+                    if (!modeDraw && !autoSplit && !autoMerge && !autoTextline)
                         searchCurrentModifyPt(event);   
                 }   
             } else {
@@ -904,18 +908,46 @@ myApp.controller('gtingController', function ($scope) {
             });
 
         $scope.test = function () {
-            var path = new Path();
-            path.strokeColor = 'red';
-            path.add(new Point(100, 200));
-            view.draw();
-            path.add(new Point(150, 250));
-            view.draw();
-            path.add(new Point(200, 250));
-            view.draw();
-            path.add(new Point(100, 300));
-            view.draw();
-            path.closed = true;            
-            path.insert(4, new Point(120, 25));
+
+            
+            ModalService.showModal({
+                 templateUrl: "modals/openImage.html",
+                 controller: "openImageController",
+                 inputs: {
+              //       title: "A More Complex Example"
+                     imageName: imgName
+                 }
+             }).then(function (modal) {
+                 modal.element.modal();
+                 modal.close.then(function (result) {
+ //                    $scope.complexResult = "Name: " + result.name + ", age: " + result.age;
+                     alert(result.xmlName);
+//                     view.update();
+                 });
+             });
+              
+            
+        };
+        
+        // clear the current drawing paths
+        $scope.clearGT = function () {
+            var layerChildren = project.activeLayer.children;
+            var pathsToBeDeleted = [];
+            for (var i = 0; i < layerChildren.length; i++) {
+            	if (layerChildren[i].className == "Path" && layerChildren[i].strokeColor != null) {
+                    // save the paths to an array
+                    pathsToBeDeleted.push(layerChildren[i]);
+                }
+            }
+            for (var i = 0; i < pathsToBeDeleted.length; i++){
+                pathsToBeDeleted[i].remove();
+                // also delete the DOM elements
+                if (pathsToBeDeleted[i].data.idXML) 
+                    updateDOMDelete(pathsToBeDeleted[i].data.idXML);
+                else
+                    updateDOMDelete(pathsToBeDeleted[i].id);
+
+            }
             view.draw();
         }
         
@@ -942,6 +974,7 @@ myApp.controller('gtingController', function ($scope) {
                         currentDrawPathLastPoint = null;
                         searchingPath.remove();
                         pathFinished = true;
+                        modeDraw = false;
                     } else {
                         var indexRemoved = currentDrawPath.segments.length - 1;
                         currentDrawPath.removeSegment(indexRemoved);
@@ -1210,39 +1243,47 @@ myApp.controller('gtingController', function ($scope) {
             });
         });
 
-
-
-        function updateDOMDraw() {
+        function updateDOMDraw(type) {
+            var tmpVertexesPolygon = null;
+            var tmpDrawPath = null;
+            if (type == "manual"){
+                tmpVertexesPolygon = $scope.polygon;
+                tmpDrawPath = currentDrawPath;
+            } else {
+                tmpVertexesPolygon = vertexesAuto;
+                tmpDrawPath = currentDrawPathAuto;
+            }
+            console.log(tmpDrawPath);
+            console.log(tmpVertexesPolygon);
             var page = xmlDoc.getElementsByTagName("Page")[0];
             newCd = xmlDoc.createElement("Coords");
-            for (var i = 0; i < $scope.polygon.length; i++) {
+            for (var i = 0; i < tmpVertexesPolygon.length; i++) {
                 newPt = xmlDoc.createElement("Point");
-                newPt.setAttribute("y", $scope.polygon[i].y);
-                newPt.setAttribute("x", $scope.polygon[i].x);
+                newPt.setAttribute("y", tmpVertexesPolygon[i].y);
+                newPt.setAttribute("x", tmpVertexesPolygon[i].x);
                 newCd.appendChild(newPt);
             }
             newTR = xmlDoc.createElement("TextRegion");
             newTR.setAttribute("comments", "");
             newTR.setAttribute("custom", "0");
-            newTR.setAttribute("id", currentDrawPath.id);
-            if (currentDrawPath.strokeColor.equals(colorTextLine))
+            newTR.setAttribute("id", tmpDrawPath.id);
+            if (tmpDrawPath.strokeColor.equals(colorTextLine))
                 newTR.setAttribute("type", "textline");
-            if (currentDrawPath.strokeColor.equals(colorText))
+            if (tmpDrawPath.strokeColor.equals(colorText))
                 newTR.setAttribute("type", "text");
-            if (currentDrawPath.strokeColor.equals(colorDecoration))
+            if (tmpDrawPath.strokeColor.equals(colorDecoration))
                 newTR.setAttribute("type", "decoration");
-            if (currentDrawPath.strokeColor.equals(colorComment))
+            if (tmpDrawPath.strokeColor.equals(colorComment))
                 newTR.setAttribute("type", "comment");
-            if (currentDrawPath.strokeColor.equals(colorPage))
+            if (tmpDrawPath.strokeColor.equals(colorPage))
                 newTR.setAttribute("type", "page");
-            newTR.setAttribute("id", currentDrawPath.id);
+            newTR.setAttribute("id", tmpDrawPath.id);
             newTR.appendChild(newCd);
             page.appendChild(newTR);
             hasLastChange = true;
         }
 
-
-        $scope.exportGT = function () {
+        function exportGT() {
             if (xmlDoc != null) {
                 if (hasLastChange){
                     editLastChange();
@@ -1256,10 +1297,10 @@ myApp.controller('gtingController', function ($scope) {
                 var textFileAsBlob = new Blob([textToWrite], {
                     type: 'text/xml'
                 });
-                //       var fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
-                var fileNameToSaveAs = imgName + "_" + "gt" + ".xml";
+                //       var xmlName = document.getElementById("inputxmlName").value;
+//                var xmlName = imgName + "_" + "gt" + ".xml";
                 var downloadLink = document.createElement("a");
-                downloadLink.download = fileNameToSaveAs;
+                downloadLink.download = xmlName;
                 downloadLink.innerHTML = "Download File";
                 if (window.webkitURL != null) {
                     // Chrome allows the link to be clicked
@@ -1275,6 +1316,25 @@ myApp.controller('gtingController', function ($scope) {
                 }
                 downloadLink.click();
             }
+        }
+
+        $scope.exportGT = function () {
+            ModalService.showModal({
+                 templateUrl: "modals/openImage.html",
+                 controller: "openImageController",
+                 inputs: {
+              //       title: "A More Complex Example"
+                     imageName: imgName
+                 }
+             }).then(function (modal) {
+                 modal.element.modal();
+                 modal.close.then(function (result) {
+//                     alert(result.xmlName);
+                     xmlName = result.xmlName;
+                     myEmail = result.emailAddress;
+                     exportGT();
+                 });
+             });
         }
 
         function destroyClickedElement(event) {
@@ -1597,15 +1657,20 @@ myApp.controller('gtingController', function ($scope) {
         
         
         $scope.splitPolygon = function () {
+            if (autoTextline || autoMerge)
+                autoSplit = false;
+            autoTextline = false;
+            autoMerge = false;
         	autoSplit = !autoSplit;
         	if (autoSplit){       	
         		modeModify = false;
-        	     //   	document.getElementById("canvas").style.cursor = 
-        	      //  		"url(http://www.javascriptkit.com/dhtmltutors/cursor-hand.gif), auto";	
+        	    $('#autoSegBtn').removeClass('active');
+                $('#splitPolygonBtn').addClass('active');
+                $('#mergePolygonBtn').removeClass('active');
         	    document.getElementById("canvas").style.cursor = 
-        		        "url(http://www.rw-designer.com/cursor-extern.php?id=25320), auto";
+        		        "url(http://www.rw-designer.com/cursor-extern.php?id=28789), auto";
         	} else {
-        		document.getElementById("canvas").style.cursor = "auto";
+        		removeActive();
         	}  	
         }
         
@@ -1623,21 +1688,40 @@ myApp.controller('gtingController', function ($scope) {
         	    	console.log(data);  
         	    	if (data.textLines.length == 2){
         	    		currentSplitPolygon.remove();
-        	    		processResponseJson(data);	
-        	    	} else 
+        	    		processResponseJson(data);
+                        splitPolygon = [];
+                        currentSplitPolygon = null;
+                        autoSplit = false;
+                        removeActive();
+                        view.update();
+        	    	} else {
         	    		alert("Split operation failed.");
+                        splitPolygon = [];
+                        currentSplitPolygon = null;
+                        autoSplit = false;
+                        removeActive();
+                    }
         	    }
         	});
         }
         
         $scope.mergePolygons = function(){
+            if (autoTextline || autoSplit)
+                autoMerge = false;
+            autoTextline = false;
+            autoSplit = false;
         	autoMerge = !autoMerge;
         	if (autoMerge) {
+                modeModify = false;
+                $('#autoSegBtn').removeClass('active');
+                $('#splitPolygonBtn').removeClass('active');
+                $('#mergePolygonBtn').addClass('active');
         		modeModify = false;
         		document.getElementById("canvas").style.cursor = 
-    		        "url(http://www.rw-designer.com/cursor-extern.php?id=35285), auto";		
-        	} else 
-        		document.getElementById("canvas").style.cursor = "auto";        	
+    		        "url(http://www.rw-designer.com/cursor-extern.php?id=28786), auto";		
+        	} else{ 
+        		removeActive();
+            }      	
         }
         
         function autoMergePolygons (mergePolygon1, mergePolygon2) {
@@ -1651,33 +1735,91 @@ myApp.controller('gtingController', function ($scope) {
         	    },
         	    success: function(data) {
         	    	console.log(data);  
-        	    	if (data.textLines.length == 1){
-        	    		currentMergePolygon1.remove();
+        	    	if (data.textLines.length == 1){	
+        	    		processResponseJson(data);
+                        if (currentMergePolygon1.data.idXML) 
+                            updateDOMDelete(currentMergePolygon1.data.idXML);
+                        else
+                            updateDOMDelete(currentMergePolygon1.id);
+                        if (currentMergePolygon2.data.idXML) 
+                            updateDOMDelete(currentMergePolygon2.data.idXML);
+                        else
+                            updateDOMDelete(currentMergePolygon2.id);  
+                        currentMergePolygon1.remove();
         	    		currentMergePolygon2.remove();
-        	    		processResponseJson(data);	
-        	    	} else 
+                        mergePolygon1 = [];
+                        mergePolygon2 = [];
+                        mergeCount = 0; // indicate which polygon the user is clicking. It is at most 2.
+                        currentMergePolygon1 = null;
+                        currentMergePolygon2 = null;
+                        currentModify.remove();
+                        autoMerge = false;
+                        removeActive();
+                        view.update();
+        	    	} else {
+                        mergePolygon1 = [];
+                        mergePolygon2 = [];
+                        mergeCount = 0; // indicate which polygon the user is clicking. It is at most 2.
+                        currentMergePolygon1 = null;
+                        currentMergePolygon2 = null;
+                        autoMerge = false;
+                        removeActive();
         	    		alert("Merge operation failed.");
+                    }
         	    }
         	});
         }
         
+        $scope.selectTextBlock = function() {
+            if (autoSplit || autoMerge){
+                autoTextline = false;
+            }
+            autoSplit = false;
+            autoMerge = false;
+			autoTextline = !autoTextline;
+			if (autoTextline){
+                modeModify = false;
+                $('#autoSegBtn').addClass('active');
+                $('#splitPolygonBtn').removeClass('active');
+                $('#mergePolygonBtn').removeClass('active');
+				document.getElementById("canvas").style.cursor = 
+			        "url(https://diuf.unifr.ch/diva/divadiaweb/rectangle.gif), auto";
+				$scope.drawRectangle();
+				$scope.drawTextBlock();
+			} else {
+                removeActive();
+			}
+		}
         
-        function autoExtractTextLines (top, bottom, left, right){
+        function autoExtractTextLines (vertexesRectangle){
+            // top, bottom, left, right
+            // make two new arrays containing x and y respectively
+            var xVertexes = [vertexesRectangle[0].x, vertexesRectangle[1].x, 
+                            vertexesRectangle[2].x, vertexesRectangle[3].x];
+            var yVertexes = [vertexesRectangle[0].y, vertexesRectangle[1].y, 
+                            vertexesRectangle[2].y, vertexesRectangle[3].y];
+            // sort the two arrays. The first element is the lowest value
+            xVertexes.sort(function(a, b){return a-b});
+            yVertexes.sort(function(a, b){return a-b});
+            var top = yVertexes[0];
+            var bottom = yVertexes[3];
+            var left = xVertexes[0];
+            var right = xVertexes[3];
+            // padding
+            var padding = 17;
+            if (top - padding >= 0)
+                top = top - padding;
+            if (bottom + padding < imgHeight)
+                bottom = bottom + padding;
+            if (left - padding >= 0)
+                left = left - padding;
+            if (right + padding < imgWidth)
+                right = right + padding;
+            
         	document.getElementById("autoSegmentComment").innerHTML = "Please wait for a few seconds!";
 			var imageUrl = document.getElementById("parzival").src;
-			/*$.post('AutoSegmentServlet', {
-					imageName : imgName,
-					imageURL : imageUrl,				
-		            top: top,
-		            bottom: bottom,
-		            left: left,
-		            right: right    	
-			}, function(responseJson) {
-				console.log(responseJson);
-				processResponseJson(responseJson);
-			});*/
-			
-			
+            imgName = getImageName(imgName);
+                       
 			$.ajax({
         		type: "POST", // it's easier to read GET request parameters
         	    url: 'AutoSegmentServlet',
@@ -1695,15 +1837,26 @@ myApp.controller('gtingController', function ($scope) {
         	    success: function(data) {
         	    	console.log(data);
     				processResponseJson(data);
+                    document.getElementById("autoSegmentComment").innerHTML = "";
+                    autoTextline = false;
+                    removeActive();
+                    autoTextLineRectangle.remove();
+                    view.update();
         	    },
         	    error: function(){
         	        alert('Automatic text lines extraction failed.');
         	        document.getElementById("autoSegmentComment").innerHTML = "";
         	        autoTextline = false;
+                    removeActive();
         	      }
         	});
-			
-			
+        }
+    
+        function removeActive(){
+                $('#autoSegBtn').removeClass('active');
+                $('#splitPolygonBtn').removeClass('active');
+                $('#mergePolygonBtn').removeClass('active');
+				document.getElementById("canvas").style.cursor = "auto";
         }
         
         function processResponseJson(responseJson){
@@ -1733,62 +1886,47 @@ myApp.controller('gtingController', function ($scope) {
 
         function drawAutoResult(textRegions, regionType){           
         	for (var i = 0; i < textRegions.length; i++){
-        		$scope.polygon = [];
+        		vertexesAuto = [];
         		var points = textRegions[i];
-                currentDrawPath = new Path();
+                currentDrawPathAuto = new Path();
                 for (var j = 0; j < points.length; j++) {
                     pointPath = points[j];
                     var x = pointPath[0];
                     var y = pointPath[1];
-                    $scope.polygon.push({
+                    vertexesAuto.push({
                         x: x,
                         y: y
                     });
                     // transform the coordinate to display it
                     x = x * zoom + raster.bounds.x;
                     y = y * zoom + raster.bounds.y;
-                    currentDrawPath.add(new Point(x, y));
+                    currentDrawPathAuto.add(new Point(x, y));
                 }
                 if (points.length == 4 && points[0][1] == points[1][1] &&
                     points[1][0] == points[2][0] &&
                     points[2][1] == points[3][1])
-                    currentDrawPath.data.shape = "rectangle";
+                    currentDrawPathAuto.data.shape = "rectangle";
                 else
-                    currentDrawPath.data.shape = "polygon";
+                    currentDrawPathAuto.data.shape = "polygon";
 
                 // assign color to different classes
                 switch (regionType) {
                 case "textBlocks":
-                    currentDrawPath.strokeColor = 'blue';
+                    currentDrawPathAuto.strokeColor = 'blue';
                     break;
                 case "textLines":
-                    currentDrawPath.strokeColor = 'red';
-                    document.getElementById("autoSegmentComment").innerHTML = "";
+                    currentDrawPathAuto.strokeColor = 'red';
                     break;
                 }
-                currentDrawPath.strokeWidth = 2;
-                currentDrawPath.closed = true;
+                currentDrawPathAuto.strokeWidth = 2;
+                currentDrawPathAuto.closed = true;
                 if (xmlDoc == null)
                     initDom();
-                updateDOMDraw();
+                updateDOMDraw("auto");
         	}
         }
-        					
-		$scope.selectTextBlock = function() {
-			autoTextline = !autoTextline;
-			if (autoTextline){
-				document.getElementById("canvas").style.cursor = 
-			        "url(https://diuf.unifr.ch/diva/divadiaweb/rectangle.gif), auto";
-				$scope.drawRectangle();
-				$scope.drawTextBlock();
-				autoSplit = false;
-			} else {
-				document.getElementById("canvas").style.cursor = "auto";
-			}
-		}
-        
 
-});
+}]);
 
 
 

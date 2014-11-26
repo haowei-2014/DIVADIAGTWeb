@@ -111,11 +111,13 @@ public class MergePolygons {
 	}
 	
 	public static void mergePolygons (Polygon leftPolygon, Polygon rightPolygon){
+		double ratio = 0.3; // a ratio of the width of the polygon
 		int xLinkingRect = leftPolygon.getBounds().x + leftPolygon.getBounds().width;
-		xLinkingRect -= leftPolygon.getBounds().width/3;
+		xLinkingRect -= leftPolygon.getBounds().width * ratio;
 		int yLinkingRect = 0;
 		int widthLinkingRect = rightPolygon.getBounds().x - (leftPolygon.getBounds().x + leftPolygon.getBounds().width);
-		widthLinkingRect = widthLinkingRect + leftPolygon.getBounds().width/3 + rightPolygon.getBounds().width/3;
+		widthLinkingRect = (int) (widthLinkingRect + leftPolygon.getBounds().width * ratio 
+				+ rightPolygon.getBounds().width * ratio);
 		int heightLinkingRect = height;
 		Rectangle linkingRect = new Rectangle(xLinkingRect, yLinkingRect, widthLinkingRect, heightLinkingRect);
 		image = CommonFunctions.drawRectsMerge(image, leftPolygon, rightPolygon, linkingRect);
@@ -134,7 +136,7 @@ public class MergePolygons {
 		ImagePlus imp = new ImagePlus("test", image);
 		ManyBlobs allBlobs = new ManyBlobs(imp); // Extended ArrayList				
 		allBlobs.findConnectedComponents(); // Start the Connected Component
-		allBlobs = allBlobs.filterBlobs(500,100000, Blob.GETENCLOSEDAREA); 
+		allBlobs = allBlobs.filterBlobs(500,100000000, Blob.GETENCLOSEDAREA); 
 		System.out.println("AllBlobs size: " + allBlobs.size());
 		if (allBlobs.size() != 1)
 			return;

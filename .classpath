@@ -18,8 +18,6 @@
 	<classpathentry kind="lib" path="/home/hao/Downloads/gson-2.3.jar"/>
 	<classpathentry kind="lib" path="/home/hao/Downloads/ijblob-1.3.jar"/>
 	<classpathentry kind="lib" path="/home/hao/Downloads/matlabcontrol-4.1.0.jar"/>
-	<classpathentry kind="lib" path="/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_redistribution_files_only/GaborClustering.jar"/>
-	<classpathentry kind="lib" path="/usr/local/MATLAB/MATLAB_Compiler_Runtime/v82/toolbox/javabuilder/jar/javabuilder.jar"/>
 	<classpathentry kind="lib" path="/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/resource/Kai/commons-codec-1.8.jar"/>
 	<classpathentry kind="lib" path="/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/resource/Kai/commons-codec-1.8-javadoc.jar"/>
 	<classpathentry kind="lib" path="/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/resource/Kai/commons-codec-1.8-sources.jar"/>
@@ -34,5 +32,7 @@
 	<classpathentry kind="lib" path="/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/resource/Kai/jfreechart-1.0.14-experimental.jar"/>
 	<classpathentry kind="lib" path="/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/resource/Kai/jfreechart-1.0.14-swt.jar"/>
 	<classpathentry kind="lib" path="/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/resource/Kai/jmathplot.jar"/>
+	<classpathentry kind="lib" path="/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/resource/GaborClustering.jar"/>
+	<classpathentry kind="lib" path="/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/resource/javabuilder.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

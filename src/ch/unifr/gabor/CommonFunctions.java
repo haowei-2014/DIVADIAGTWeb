@@ -14,6 +14,23 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 public class CommonFunctions {
+	
+	
+	public static void deleteFolder(File folder) {
+	    File[] files = folder.listFiles();
+	    if(files!=null) { //some JVMs return null for empty dirs
+	        for(File f: files) {
+	            if(f.isDirectory()) {
+	                deleteFolder(f);
+	            } else {
+	                f.delete();
+	            }
+	        }
+	    }
+	    folder.delete();
+	}
+
+	
 	/** This function is to convert the values of pixels on the image to either 0 or 255.
 	 * @param inputImage
 	 * @return
@@ -454,7 +471,7 @@ public class CommonFunctions {
 			points.add(new Point(polygon.xpoints[i], polygon.ypoints[i]));
 		}
 
-		int interval = 10; // pick up points every interval points
+		int interval = 20; // pick up points every interval points
 		int newNumberPoints = (numberPoints - 1) / interval + 1; // number of boundary points on the new polygon
 		int[] xNewPoints = new int[(numberPoints - 1) / interval + 1];
 		int[] yNewPoints = new int[(numberPoints - 1) / interval + 1];

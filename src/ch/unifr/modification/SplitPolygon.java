@@ -67,31 +67,37 @@ public class SplitPolygon {
 	public static void splitPolygon (int xSplit, int ySplit){
 		xSplit -= polygonBound.x;
 		ySplit -= polygonBound.y;
-		int widthRect = 80;
+		// height of the splitting rectangle	
 		int heightRect = 20;
-		int xRect = xSplit - widthRect/2;
+		int incrementalWidth = 20;
+		int xRect = xSplit - incrementalWidth/2;
 		int yRect = ySplit - heightRect/2;
-		
-				
-		Graphics2D g2d = image.createGraphics();
-		g2d.setColor(Color.white);
-		g2d.fillRect(xRect, yRect, widthRect, heightRect);
-		if (xRect < 0)
-			xRect = 0;
-		if (yRect < 0)
-			yRect = 0;
-		if (xSplit + widthRect/2 >= polygonBound.width)
-			widthRect = polygonBound.width - xRect;
-		if (ySplit + heightRect/2 >= polygonBound.height)
-			heightRect = polygonBound.height - yRect;
-		g2d.fillRect(xRect, yRect, widthRect, heightRect);
-//		g2d.fillRect(xSplit-5, ySplit-2, 10, 4);
-		
-		try {
-			File file = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" + "splitsplitPolygon.png");
-			ImageIO.write(image, "png", file);
-		} catch (IOException e) {
-			e.printStackTrace();
+		// increase the width of the linking rectangle until the polygon is split
+		for (int widthRect = 60; widthRect < 1500; widthRect+=incrementalWidth) {
+			System.out.println("Splitting rectangle width: " + widthRect);
+			xRect = xRect - incrementalWidth/2;
+			Graphics2D g2d = image.createGraphics();
+			g2d.setColor(Color.white);
+			g2d.fillRect(xRect, yRect, widthRect, heightRect);
+			if (xRect < 0)
+				xRect = 0;
+			if (yRect < 0)
+				yRect = 0;
+			if (xSplit + widthRect/2 >= polygonBound.width)
+				widthRect = polygonBound.width - xRect;
+			if (ySplit + heightRect/2 >= polygonBound.height)
+				heightRect = polygonBound.height - yRect;
+			g2d.fillRect(xRect, yRect, widthRect, heightRect);
+//			g2d.fillRect(xSplit-5, ySplit-2, 10, 4);
+			
+			try {
+				File file = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" + "splitsplitPolygon.png");
+				ImageIO.write(image, "png", file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (generate2NewPolygons())
+				break;
 		}
 		System.out.println("splitPolygon is finished.");
 	}
@@ -103,15 +109,15 @@ public class SplitPolygon {
 			commonXPoints.get(j).y -= expand; // lower
 	}*/
 	
-	public static void generate2NewPolygons(){
+	public static boolean generate2NewPolygons(){
 		image = CommonFunctions.convertImage(image);	
 		ImagePlus imp = new ImagePlus("test", image);
 		ManyBlobs allBlobs = new ManyBlobs(imp); // Extended ArrayList				
 		allBlobs.findConnectedComponents(); // Start the Connected Component
-		allBlobs = allBlobs.filterBlobs(500,100000, Blob.GETENCLOSEDAREA); 
+		allBlobs = allBlobs.filterBlobs(500,1000000000, Blob.GETENCLOSEDAREA); 
 		System.out.println("AllBlobs size: " + allBlobs.size());
 		if (allBlobs.size() != 2)
-			return;
+			return false;
 		pNew1 =  CommonFunctions.adjustPolygon(allBlobs.get(0).getOuterContour());
 		pNew2 =  CommonFunctions.adjustPolygon(allBlobs.get(1).getOuterContour());
 		pNew1 = DrawGT.adjustPolygon(pNew1);
@@ -139,7 +145,7 @@ public class SplitPolygon {
 			e.printStackTrace();
 		}
 		System.out.println("generate2NewPolygons is finished.");
-		
+		return true;
 	}
 
 	public static HashMap<String, List<int[][]>> getResults(MyPoint[] myPoints, int xSplit, int ySplit){
@@ -147,7 +153,7 @@ public class SplitPolygon {
 		results.clear();
 		generatePolygonImage (myPoints);
 		splitPolygon (xSplit, ySplit);
-		generate2NewPolygons();
+//		generate2NewPolygons();
 		
 		List<int[][]> splitPolygonsList = new ArrayList<int[][]>();
 		for (Polygon polygon : polygonsGT){

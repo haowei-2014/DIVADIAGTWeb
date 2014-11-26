@@ -54,3 +54,19 @@ function pointLineDistance(point1, point2, cursor, widthCanvas) {
         return null;
     }
 }
+
+function getImageName(str) {
+    var searchStr = "/";
+    var startIndex = 0, searchStrLen = searchStr.length;
+    var index, indices = [];
+    while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+        indices.push(index);
+        startIndex = index + searchStrLen;
+    }
+    // if the / is the last character, then pop it
+    if (indices[indices.length-1] == str.length-1)
+        indices.pop();
+    // return the string after the last /
+    return str.substring(indices[indices.length-1]+1);
+}
+

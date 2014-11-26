@@ -1,0 +1,34 @@
+<div class="modal fade" id="myImageModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="close()" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Open an image</h4>
+      </div>
+      <div class="modal-body">
+        <form role="form">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Please type the URL of the image</label>
+            <input type="text" class="form-control" id="imageURLModal" placeholder="Enter URL" ng-model="imageURL">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputFile">Or browse from your local computer:</label>
+            <input type="file" id="myLocalImage">
+          </div>
+        </form>
+                   
+<!--        <p>Please type the URL of the image</p>
+        <input type="text" size="60" id="imageURLModal" ng-model="name"/> 
+        <br>
+        <br>
+        <p>Or browse from your local computer:</p>
+        <input id="myImage" type="file"/>-->
+              
+      </div>
+      <div class="modal-footer">
+        <button id="openImageBtn" type="button" class="btn btn-primary" data-dismiss="modal" ng-click="close()">Okay</button>
+        <!-- <button type="button" class="btn btn-primary" ng-click="myFunction()">Test</button> -->
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

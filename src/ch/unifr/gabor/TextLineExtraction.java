@@ -16,6 +16,8 @@ import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
 
+import ch.unifr.Step1Projection;
+import ch.unifr.Step2Gabor;
 import ij.blob.*;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
@@ -29,9 +31,9 @@ import ij.*;
  */
 public class TextLineExtraction {
 
-	public String pathName = "/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/";
-	public String fileName = "manualTextBlockOutput.png";
-	public static String originalName = "manualTextBlockInput.png";
+	public String pathName = Step1Projection.filePath;
+	public String fileName = Step2Gabor.gaborOutput;
+	public static String originalName = Step1Projection.gaborInput;
 //	public static String originalName = "SaintGall_GaborInput.422.412.png";
 	
 	public LinkedHashMap<String, Rectangle> patches = new LinkedHashMap<String, Rectangle>();

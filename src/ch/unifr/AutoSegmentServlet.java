@@ -65,8 +65,8 @@ public class AutoSegmentServlet extends HttpServlet {
 		System.out.println("DoPost is executed.");
 				
 		// text blocks extraction using projection method
-		Step1Projection projectMethod = new Step1Projection(imageURL);
-		projectMethod.cropTextBlock(top, bottom, left, right);
+		Step1Projection projectMethod = new Step1Projection(imageURL, imageName, top, left);
+		Step1Projection.cropTextBlock(top, bottom, left, right);
 //		HashMap<String, List<int[][]>> resultsStep1 = projectMethod.getResults();
 	    System.out.println("Text blocks extraction is done.");
 	    
