@@ -22,15 +22,16 @@ public class Step2Gabor {
 		
 		
 		gaborOutput = Step1Projection.gaborInput.replace("GaborInput", "GaborOutput");
-		GaborClustering.start(Step1Projection.filePath + Step1Projection.gaborInput
-				, Step1Projection.filePath + gaborOutput);
+		// use jar of Gabor filter
+		/*		GaborClustering.start(Step1Projection.filePath + Step1Projection.gaborInput
+				, Step1Projection.filePath + gaborOutput);*/
 		
-		/*TextLinesGaborMatlab textlinesExtraction = new TextLinesGaborMatlab();
+		// use matlab directly
 		try {
-			textlinesExtraction.textLinesExtraction();
+			TextLinesGaborMatlab.textLinesExtraction();
 		} catch (MatlabConnectionException | MatlabInvocationException e) {
 			e.printStackTrace();
-		}*/
+		}
 		
 		TextLineExtraction tle = new TextLineExtraction();
 		polygonsGT = tle.start(offsetX, offsetY);

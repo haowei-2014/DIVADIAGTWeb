@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.imageio.ImageIO;
+
+import ch.unifr.Step1Projection;
 import ch.unifr.SplitServlet.MyPoint;
 import ch.unifr.gabor.CommonFunctions;
 import ch.unifr.gabor.DrawGT;
@@ -56,7 +59,7 @@ public class SplitPolygon {
 		g2d.fillPolygon(newPolygon);
 		
 		try {
-			File file = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" + "splitgeneratePolygonImage.png");
+			File file = new File(Step1Projection.filePath + "splitgeneratePolygonImage.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -91,7 +94,7 @@ public class SplitPolygon {
 //			g2d.fillRect(xSplit-5, ySplit-2, 10, 4);
 			
 			try {
-				File file = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" + "splitsplitPolygon.png");
+				File file = new File(Step1Projection.filePath + "splitsplitPolygon.png");
 				ImageIO.write(image, "png", file);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -139,7 +142,7 @@ public class SplitPolygon {
 		g2d.fillPolygon(pNew1);
 		g2d.fillPolygon(pNew2);		
 		try {
-			File file = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" + "splitgenerate2NewPolygons.png");
+			File file = new File(Step1Projection.filePath + "splitgenerate2NewPolygons.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();

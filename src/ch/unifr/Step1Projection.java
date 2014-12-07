@@ -16,8 +16,6 @@ import javax.imageio.ImageIO;
 
 import sun.misc.BASE64Decoder;
 import ch.unifr.gabor.CommonFunctions;
-import ch.unifr.textblock.Block;
-import ch.unifr.textblock.BlockRetriever;
 
 import com.google.gson.Gson;
 
@@ -30,7 +28,7 @@ public class Step1Projection {
 	
 	public Step1Projection(String imageURL, String imageName, int top, int left) {	
 		filePath = System.getProperty("user.dir") + File.separator + "tmpData" + File.separator;
-		gaborInput = imageName.replaceAll(File.separator, "") + "_" + top + "_" + left +"_GaborInput.png";	
+		gaborInput = imageName + "_" + top + "_" + left +"_GaborInput.png";	
 		// delete old data
 		File folderDelete = new File (filePath);
 		CommonFunctions.deleteFolder(folderDelete);
@@ -69,6 +67,7 @@ public class Step1Projection {
         System.out.println("Width is: " + w + ", Height is: " + h);
 	}
 	
+/*	// use Kai's projection profile method to extract text blocks
 	public static HashMap<String, List<int[][]>> getResults(){		
 		ArrayList<Block> blockList = BlockRetriever.start(image);
 		results = new HashMap<String, List<int[][]>>();	
@@ -85,7 +84,7 @@ public class Step1Projection {
 	//	textBlocksList.add(new int[][] {{100, 300}, {400, 665}, {1000, 900}});
 		results.put("textBlocks", textBlocksList);	
 		return results;
-	}
+	}*/
 	
 	public static void cropTextBlock(int top, int bottom, int left, int right){	
 		BufferedImage textBlock = image.getSubimage(left, top, right-left, bottom-top);

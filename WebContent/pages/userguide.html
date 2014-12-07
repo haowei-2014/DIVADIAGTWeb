@@ -11,8 +11,32 @@ In the automatic processing part, the system automatically draws polygons repres
         <li>
             <h2>Automatic processing</h2>
         </li>
-        <!--<p class='userGuideText'>To use the automatic processing, click the button "AutoProcess". Because the automatic processing involves time-consuming image processing techniques, it normally costs a few seconds. After it is done, text lines are drawn automatically.
-        </p>-->
+        <p class='userGuideText'> Automatic processing has three modes: extract text lines, split, and merge.
+        </p>
+            <ul>
+                <li><h3>Extract text lines</h3></li>
+                    <p class='userGuideText'>First, the users needs to manually select a text block. The user clicks the green button "AutoSeg". Then the system allows the user to draw a rectangle representing the text block. The cursor becomes <img src="https://diuf.unifr.ch/diva/divadiaweb/rectangle.gif">. In a way similar with drawing a text block rectangle, the user clicks a point as a vertex of the rectangle and clicks a second one as the diagonal vertex. </p> 
+                 
+                <p align="middle">
+              <img src="https://diuf.unifr.ch/diva/divadiaweb/imagesUserGuide/autoSeg.png"  height="200" width="300">     </p>     
+                        
+            <p class='userGuideText'>            
+The perfomance of the automatic text lines extraction depends much on how the user manually selects text block. Here we give some recommendations. 1) The selected area contains only one single-column text block. 2) The selection is as precise as possible. Don't incorporate much margin of the text block. </p>
+                <li><h3>Split</h3></li>
+                    <p class='userGuideText'> </p>
+                <li><h3>Merge</h3></li>
+                    <p class='userGuideText'> </p>
+            </ul>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         <p class='userGuideText'>Since the automatic processing is not accessible to the public currently, we don't give the guide. The user can directly use manual edition without automatic processing.
         </p>
         <li>
@@ -20,12 +44,12 @@ In the automatic processing part, the system automatically draws polygons repres
         </li>
         <p class='userGuideText'>The user can upload any image to manually edit. To upload an image, select File -> Open image..., or click the button "Import Img". The user can either type the url of the image, or choose the image from his/her local computer. 
         </p>
-        <p class='userGuideText'>The user can use the mouse wheel to zoom in/out the image. With the directional arrows and zooming buttons in the left, the user can move and zoom the image, just like using a map.
+        <p class='userGuideText'>The user can use the mouse wheel to zoom in/out and drag the image. Moreover, with the directional arrows and zooming buttons in the left, the user can also move and zoom the image, just like using a map.
         </p>
         <p class='userGuideText'>Manual edition includes two modes: manual drawing and manual modification.</p>
             <ul>
                 <li><h3>Manual drawing</h3></li>
-                <p class='userGuideText'>The user can directly draw ground truth for different regions. In the menubar, click "Draw". Five region types and two shapes are listed. Choose one for each group. On the image, the use can draw ground truth with the mouse. When the user draws a polygon, single click creates a vertex of a polygon, and double click completes the polygon. During drawing a polygon, if the user wants to delete the last point (vertex), press <kbd>backspace</kbd>. When the user draws a rectangle, the first single click creates a vertex of the rectangle, and the second single click creates the diagonal vertex and also completes the rectangle.
+                <p class='userGuideText'>The user can directly draw ground truth for different regions. In the menubar, click "Draw". Five region types and two shapes are listed. Choose one for each group. On the image, the use can draw ground truth with the mouse. When the user draws a polygon, single click creates a vertex of a polygon, and double click completes the polygon. In addition, if a single click is close enough to the first vertext of the polygon, the polygon is also completed. During drawing a polygon, if the user wants to delete the last point (vertex), press <kbd>backspace</kbd>. When the user draws a rectangle, the first single click creates a vertex of the rectangle, and the second single click creates the diagonal vertex and also completes the rectangle.
                 </p>
                 <li><h3>Manual modification</h3></li>
                     <p class='userGuideText'>When the cursor is close enough to the boundary of a region, the region is highlighted with light red. In the meanwhile, a small yellow ball appears on the boundary. The appearance of the highlight means that now the user can modify the region. If no highlight is shown, the user cannot modify any region. </p>
@@ -35,7 +59,7 @@ In the automatic processing part, the system automatically draws polygons repres
         <p class='userGuideText'>By default, all region types are shown after being drawn. But the user can choose only optional region tyeps to show. For example, if the user wants to see all text lines but hide the other region types, select "Show" in the menubar, and then choose "Text line". The user can choose multiple region types to show. In addition, only the shown regions can be modified again.
         </p>
     </ul>
-    <p class='userGuideText'>After finishing the manual edition, the user can save the ground truth in an XML file of the <a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5597587">PAGE format</a>. To do it, select File -> Save GT..., or click the button "Export GT". Later on, the user can import the ground truth to view or edit again by selecting File -> Read GT..., or by clicking the button "Import GT".
+    <p class='userGuideText'>After finishing the manual edition, the user can save the ground truth in an XML file of the <a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5597587">PAGE format</a>. To do it, select File -> Save GT..., or click the button "Export GT". The user is asked to fill in information including the image name and email address. The XML file name is automatically composed of the image name and email address, but the user can also type the customized name. Click "OK" and save the ground truth. Later on, the user can import the ground truth to view or edit again by selecting File -> Read GT..., or by clicking the button "Import GT".
         </p>
     
 

@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import ch.unifr.Step1Projection;
 import ch.unifr.SplitServlet.MyPoint;
 import ch.unifr.gabor.CommonFunctions;
 import ch.unifr.gabor.DrawGT;
@@ -102,7 +103,7 @@ public class MergePolygons {
 		g2d.fillPolygon(newPolygon2);
 		
 		try {
-			File file = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" + "mergegeneratePolygonImage.png");
+			File file = new File(Step1Projection.filePath + "mergegeneratePolygonImage.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -123,7 +124,7 @@ public class MergePolygons {
 		image = CommonFunctions.drawRectsMerge(image, leftPolygon, rightPolygon, linkingRect);
 		
 		try {
-			File file = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" + "mergemergePolygons.png");
+			File file = new File(Step1Projection.filePath + "mergemergePolygons.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -148,7 +149,7 @@ public class MergePolygons {
 		g2d.setColor(Color.black);
 		g2d.fillPolygon(pNew);	
 		try {
-			File file = new File("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/" + "mergegenerateMergedPolygon.png");
+			File file = new File(Step1Projection.filePath + "mergegenerateMergedPolygon.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();

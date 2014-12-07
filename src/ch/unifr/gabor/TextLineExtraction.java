@@ -45,6 +45,9 @@ public class TextLineExtraction {
 	 */
 	
 	public ArrayList<Polygon> start (int offsetX, int offsetY){
+		pathName = Step1Projection.filePath;
+		fileName = Step2Gabor.gaborOutput;
+		originalName = Step1Projection.gaborInput;
 		BufferedImage img = null;
 		BufferedImage imgOriginal = null;
 		try {

@@ -1,9 +1,10 @@
 //var myApp = angular.module('myApp', []);
 
-angular.module('myApp').controller('openImageController', ['$scope', 'imageName', 'close',
+//angular.module('myApp').controller('openImageController', ['$scope', 'imageName', 'close',
+myApp.controller('openImageController', ['$scope', 'imageName', 'close',
         function ($scope, imageName, close) {
             $scope.imageName = imageName;
-            $scope.emailAddress = null;
+            $scope.emailAddress = "";
             // delete .png
  //           var imgNameWithoutSuffix = imageName.substring(0, imageName.indexOf(".")); 
             $scope.xmlName = $scope.imageName + "_" + $scope.emailAddress + ".xml";

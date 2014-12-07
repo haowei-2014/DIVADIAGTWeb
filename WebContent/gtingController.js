@@ -1,6 +1,6 @@
-angular.module('myApp').controller('gtingController', ['$scope', 'ModalService', function($scope, ModalService) {
+//angular.module('myApp').controller('gtingController', ['$scope', 'ModalService', function($scope, ModalService) {
     
-    
+ myApp.controller('gtingController', ['$scope', 'ModalService', function($scope, ModalService) {   
     // scotchApp.controller('aboutController', ['$scope', 'ModalService', function($scope, ModalService) {
 
     paper.install(window);
@@ -14,8 +14,11 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
              init();                
         }
         img.src= "https://diuf.unifr.ch/diva/divadiaweb/d-008.png";
+        $("#imageURLModal").val("https://diuf.unifr.ch/diva/divadiaweb/d-008.png");
 
-        function init() {            
+        function init() {      
+            document.getElementById("canvas").width = $(document).width();
+            document.getElementById("canvas").height = $(document).height() * 0.85;
             paper.setup(canvas);
             raster = new Raster('parzival');
             img = document.getElementById("parzival");            
@@ -152,8 +155,8 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
             autoTextLineRectangle = null; // save the text block rectangle
             splitPolygon = [];
             currentSplitPolygon = null;
-            $scope.linkingRectWidth = 80;
-            $scope.linkingRectHeight = 20;
+            linkingRectWidth = 80;
+            linkingRectHeight = 20;
             autoMerge = false;
             mergePolygon1 = [];
             mergePolygon2 = [];
@@ -259,6 +262,7 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
                 		mergeCount--;
                 	} if (JSON.stringify(mergePolygon1) == JSON.stringify(mergePolygon2)) {
                         alert ("You are clicking the same polygon!");
+                        mergeCount--;
                     }else {
                 		mergeCount = 0;  // prepare for new merge operation
                 		autoMergePolygons (mergePolygon1, mergePolygon2); 
@@ -268,6 +272,7 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
             	}  		
             } 
             else if(singleClick) {
+                $("#xyClick").html("x: " + xClick + ", y: " + yClick + ". ");
                 modeDraw = true;
                 if (pathFinished) {
                     // if draws a polygon
@@ -301,9 +306,6 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
                         } else {
                             currentDrawPath.add(event.point);
                             currentDrawPathLastPoint = new Point(xClick, yClick);
-                            $(document).ready(function () {
-                                $("#xyClick").html("x: " + xClick + ", y: " + yClick + ". ");
-                            });
                             $scope.polygon.push({
                                 x: xClick,
                                 y: yClick
@@ -315,7 +317,6 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
                         var yShow = Math.round(fromRectangle.y * zoom + raster.bounds.y);
                         //         currentDrawPath = new Path.Rectangle(new Point(xShow, yShow), event.point);
                         currentDrawPath = new Path();
-
 
                         point1Rectangle = new Point(xClick, fromRectangle.y);
                         point2Rectangle = new Point(xClick, yClick);
@@ -594,7 +595,7 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
          zoomInButton.addEventListener('mousedown', function (e) {
              interval = setInterval(function () {
                 var zoomTrail = 0;
-                var scaleFactor = 1.5;
+                var scaleFactor = 1.1;
                 zoomTrail = zoom * scaleFactor;                
                 var xZoomCenter = raster.bounds.x + imgWidth/2*zoom;
                 var yZoomCenter = raster.bounds.y + imgHeight/2*zoom;          
@@ -614,7 +615,7 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
          zoomOutButton.addEventListener('mousedown', function (e) {
              interval = setInterval(function () {
                 var zoomTrail = 0;
-                var scaleFactor = 1.5;
+                var scaleFactor = 1.1;
                 zoomTrail = zoom / scaleFactor;
                 if (zoomTrail > 0.1) {
                     zoom = zoom / scaleFactor;
@@ -928,7 +929,28 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
               
             
         };
-        
+    
+    
+        $scope.setAutoSeg = function() {
+            ModalService.showModal({
+                 templateUrl: "modals/autoSegSetting.html",
+                 controller: "autoSegSettingController",
+       //          windowClass: 'app-modal-window',
+                 inputs: {
+              //       title: "A More Complex Example"
+                     linkingRectWidth: linkingRectWidth,
+                     linkingRectHeight: linkingRectHeight
+                 }
+             }).then(function (modal) {
+                 modal.element.modal();
+                 modal.close.then(function (result) {               
+                     linkingRectWidth = result.linkingRectWidth;
+                     linkingRectHeight = result.linkingRectHeight;
+                 });
+             });
+        } 
+    
+    
         // clear the current drawing paths
         $scope.clearGT = function () {
             var layerChildren = project.activeLayer.children;
@@ -1669,15 +1691,19 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
                 $('#mergePolygonBtn').removeClass('active');
         	    document.getElementById("canvas").style.cursor = 
         		        "url(http://www.rw-designer.com/cursor-extern.php?id=28789), auto";
+                document.getElementById("selectTextBlock").disabled = true;
+                document.getElementById("mergePolygon").disabled = true;
         	} else {
         		removeActive();
+                document.getElementById("selectTextBlock").disabled = false;
+                document.getElementById("mergePolygon").disabled = false;
         	}  	
         }
         
         function autoSplitPolygon (splitPolygon, xSplit, ySplit) {
         	$.ajax({
         		type: "POST", // it's easier to read GET request parameters
-        	    url: '/DIVADIAGTWeb/SplitServlet',
+        	    url: 'SplitServlet',
         	    dataType: 'JSON',
         	    data: { 
         	    	xSplit: xSplit,
@@ -1693,12 +1719,16 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
                         currentSplitPolygon = null;
                         autoSplit = false;
                         removeActive();
+                        document.getElementById("selectTextBlock").disabled = false;
+                        document.getElementById("mergePolygon").disabled = false;
                         view.update();
         	    	} else {
         	    		alert("Split operation failed.");
                         splitPolygon = [];
                         currentSplitPolygon = null;
                         autoSplit = false;
+                        document.getElementById("selectTextBlock").disabled = false;
+                        document.getElementById("mergePolygon").disabled = false;
                         removeActive();
                     }
         	    }
@@ -1719,8 +1749,12 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
         		modeModify = false;
         		document.getElementById("canvas").style.cursor = 
     		        "url(http://www.rw-designer.com/cursor-extern.php?id=28786), auto";		
+                document.getElementById("selectTextBlock").disabled = true;
+                document.getElementById("splitPolygon").disabled = true;
         	} else{ 
         		removeActive();
+                document.getElementById("selectTextBlock").disabled = false;
+                document.getElementById("splitPolygon").disabled = false;
             }      	
         }
         
@@ -1752,9 +1786,11 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
                         mergeCount = 0; // indicate which polygon the user is clicking. It is at most 2.
                         currentMergePolygon1 = null;
                         currentMergePolygon2 = null;
-                        currentModify.remove();
+                  //      currentModify.remove();
                         autoMerge = false;
                         removeActive();
+                        document.getElementById("selectTextBlock").disabled = false;
+                        document.getElementById("splitPolygon").disabled = false;
                         view.update();
         	    	} else {
                         mergePolygon1 = [];
@@ -1764,6 +1800,8 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
                         currentMergePolygon2 = null;
                         autoMerge = false;
                         removeActive();
+                        document.getElementById("selectTextBlock").disabled = false;
+                        document.getElementById("splitPolygon").disabled = false;
         	    		alert("Merge operation failed.");
                     }
         	    }
@@ -1786,8 +1824,13 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
 			        "url(https://diuf.unifr.ch/diva/divadiaweb/rectangle.gif), auto";
 				$scope.drawRectangle();
 				$scope.drawTextBlock();
+                document.getElementById("splitPolygon").disabled = true;
+                var tmpMergePolygon = document.getElementById("mergePolygon");
+                tmpMergePolygon.disabled = true;
 			} else {
                 removeActive();
+                document.getElementById("splitPolygon").disabled = false;
+                document.getElementById("mergePolygon").disabled = false;
 			}
 		}
         
@@ -1818,7 +1861,8 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
             
         	document.getElementById("autoSegmentComment").innerHTML = "Please wait for a few seconds!";
 			var imageUrl = document.getElementById("parzival").src;
-            imgName = getImageName(imgName);
+            if (imgName && imgName != "")
+                imgName = getImageName(imgName);
                        
 			$.ajax({
         		type: "POST", // it's easier to read GET request parameters
@@ -1831,13 +1875,15 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
 		            bottom: bottom,
 		            left: left,
 		            right: right,
-		            linkingRectWidth: $scope.linkingRectWidth,
-		            linkingRectHeight: $scope.linkingRectHeight
+		            linkingRectWidth: linkingRectWidth,
+		            linkingRectHeight: linkingRectHeight
         	    },
         	    success: function(data) {
         	    	console.log(data);
     				processResponseJson(data);
                     document.getElementById("autoSegmentComment").innerHTML = "";
+                    document.getElementById("splitPolygon").disabled = false;
+                    document.getElementById("mergePolygon").disabled = false;
                     autoTextline = false;
                     removeActive();
                     autoTextLineRectangle.remove();
@@ -1846,6 +1892,8 @@ angular.module('myApp').controller('gtingController', ['$scope', 'ModalService',
         	    error: function(){
         	        alert('Automatic text lines extraction failed.');
         	        document.getElementById("autoSegmentComment").innerHTML = "";
+                    document.getElementById("splitPolygon").disabled = false;
+                    document.getElementById("mergePolygon").disabled = false;
         	        autoTextline = false;
                     removeActive();
         	      }

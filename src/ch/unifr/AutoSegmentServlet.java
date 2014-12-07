@@ -79,8 +79,7 @@ public class AutoSegmentServlet extends HttpServlet {
 			e.printStackTrace();
 		}*/
 	    
-	    Step2Gabor step2Gabor = new Step2Gabor();
-	    HashMap<String, List<int[][]>> resultsStep2 = step2Gabor.getResults(left, top, linkingRectWidth, linkingRectHeight);
+	    HashMap<String, List<int[][]>> resultsStep2 = Step2Gabor.getResults(left, top, linkingRectWidth, linkingRectHeight);
 	//    results.putAll(resultsStep1);
 	    results.putAll(resultsStep2);
 	    String json = new Gson().toJson(results);

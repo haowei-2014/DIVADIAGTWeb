@@ -28,8 +28,8 @@ public class GaborClustering {
 	
 
 	public static void main(String[] args) {		
-		GaborClustering.start("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/d-008.0.1091.205.507.2337.png"
-				, "/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/GaborOutput.png");
+		GaborClustering.start("/home/hao/tmpData/d-008.png_1564_344_GaborInput.png"
+				, "/home/hao/tmpData/d-008.png_1564_344_GaborInput.png");
 	}
 
 }
