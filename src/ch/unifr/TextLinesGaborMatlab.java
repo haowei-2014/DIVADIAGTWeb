@@ -19,14 +19,14 @@ public class TextLinesGaborMatlab {
 
        // call builtin function
        proxy.eval("disp('hello world')");
-
+       
        // call user-defined function (must be on the path)
-       proxy.eval("addpath('/home/hao/work/DIVADIAGTWeb/GaborFilters')");
+       proxy.eval("addpath('/home/hao/workspace/DIVADIAWeb2/DIVADIAWI/GaborFilters')");
        proxy.feval("cvGaborTextureSegmentRun", Step1Projection.filePath + Step1Projection.gaborInput, 
     		   Step1Projection.filePath + Step2Gabor.gaborOutput);
 /*       proxy.feval("cvGaborTextureSegmentRun", "/home/hao/Eclipse/eclipse/d-008.png_944_325_GaborInput.png", 
     		   "/home/hao/Eclipse/eclipse/d-008.png_944_325_GaborOutput.png");*/
-       proxy.eval("rmpath('/home/hao/work/DIVADIAGTWeb/GaborFilters')");
+       proxy.eval("rmpath('/home/hao/workspace/DIVADIAWeb2/DIVADIAWI/GaborFilters')");
        
        // close connection
        proxy.disconnect();

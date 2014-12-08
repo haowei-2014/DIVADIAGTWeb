@@ -26,9 +26,10 @@ public class Step1Projection {
 	public static String filePath = null;
 	public static String gaborInput = null;
 	
-	public Step1Projection(String imageURL, String imageName, int top, int left) {	
+	public static void initImage (String imageURL, int top, int left){
+		
 		filePath = System.getProperty("user.dir") + File.separator + "tmpData" + File.separator;
-		gaborInput = imageName + "_" + top + "_" + left +"_GaborInput.png";	
+		gaborInput = "_" + top + "_" + left +"_GaborInput.png";	
 		// delete old data
 		File folderDelete = new File (filePath);
 		CommonFunctions.deleteFolder(folderDelete);
@@ -66,6 +67,7 @@ public class Step1Projection {
         int h = image.getHeight();
         System.out.println("Width is: " + w + ", Height is: " + h);
 	}
+
 	
 /*	// use Kai's projection profile method to extract text blocks
 	public static HashMap<String, List<int[][]>> getResults(){		

@@ -1,0 +1,135 @@
+ant:
+<ant>
+  <mkdir dir="/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_redistribution" />
+  <mkdir dir="/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing" />
+</ant>
+mcc -W 'java:GaborClustering,GaborCluster' -T link:lib -d /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing -v /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/cvGaborTextureSegmentRun.m class{GaborCluster:/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/cvGaborTextureSegmentRun.m} 
+Compiler version: 5.0 (R2013b)
+Dependency analysis by DEPFUN.
+Processing /usr/local/MATLAB/R2013b/toolbox/images/glnxa64/mcc.enc
+Processing /usr/local/MATLAB/R2013b/toolbox/matlab/glnxa64/mcc.enc
+Processing /usr/local/MATLAB/R2013b/toolbox/stats/glnxa64/mcc.enc
+Processing /usr/local/MATLAB/R2013b/toolbox/shared/spcuilib/glnxa64/mcc.enc
+Processing include files...
+2 item(s) added.
+Processing directories installed with MCR...
+The file /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/mccExcludedFiles.log contains a list of functions excluded from the CTF archive.
+0 item(s) added.
+Generating MATLAB path for the compiled application...
+Created 59 path items.
+[Warning: Adding path
+"/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb" to Compiler path
+instance.] 
+Parsing file "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/cvGaborTextureSegmentRun.m"
+	(Referenced from: "Compiler Command Line").
+Parsing file "/usr/local/MATLAB/R2013b/toolbox/compiler/deploy/deployprint.m"
+	(Referenced from: "Compiler Command Line").
+Parsing file "/usr/local/MATLAB/R2013b/toolbox/compiler/deploy/printdlg.m"
+	(Referenced from: "Compiler Command Line").
+Deleting 21 temporary MEX authorization files.
+Removing: '/tmp/05899jWYPda_22681.auth'.
+Removing: '/tmp/05899G3pdHa_22681.auth'.
+Removing: '/tmp/05899HTUBab_22681.auth'.
+Removing: '/tmp/05899Rgd1Db_22681.auth'.
+Removing: '/tmp/05899PKnr7b_22681.auth'.
+Removing: '/tmp/058994pnSAc_22681.auth'.
+Removing: '/tmp/058995sKn4c_22681.auth'.
+Removing: '/tmp/058998n7Txd_22681.auth'.
+Removing: '/tmp/05899ELNr1d_22681.auth'.
+Removing: '/tmp/05899i9m0ue_22681.auth'.
+Removing: '/tmp/05899vbPAYe_22681.auth'.
+Removing: '/tmp/05899y0Ubsf_22681.auth'.
+Removing: '/tmp/05899RTwPVf_22681.auth'.
+Removing: '/tmp/05899mc5tpg_22681.auth'.
+Removing: '/tmp/05899vgvaTg_22681.auth'.
+Removing: '/tmp/05899HvKSmh_22681.auth'.
+Removing: '/tmp/05899ZIJCQh_22681.auth'.
+Removing: '/tmp/05899EFYnki_22681.auth'.
+Removing: '/tmp/05899IndaOi_22681.auth'.
+Removing: '/tmp/05899YdqXhj_22681.auth'.
+Removing: '/tmp/05899qeLLLj_22681.auth'.
+Generating file "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/readme.txt".
+[parsing started RegularFileObject[/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering/GaborCluster.java]]
+[parsing completed 18ms]
+[parsing started RegularFileObject[/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering/GaborClusteringMCRFactory.java]]
+[parsing completed 8ms]
+[parsing started RegularFileObject[/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering/GaborClusterRemote.java]]
+[parsing completed 5ms]
+[parsing started RegularFileObject[/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering/package-info.java]]
+[parsing completed 1ms]
+[search path for source files: /usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar]
+[search path for class files: /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/resources.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/sunrsasign.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jsse.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/charsets.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rhino.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jfr.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/classes,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/localedata.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/java-atk-wrapper.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/dnsns.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/zipfs.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/pulse-java.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunjce_provider.jar,/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunpkcs11.jar,/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/internal/MWComponentInstance.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/Disposable.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/Object.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/util/Set.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/internal/MWFunctionSignature.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/internal/MWMCR.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/MWException.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/String.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/MWComponentOptions.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/util/List.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/pooling/Poolable.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/rmi/Remote.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/rmi/RemoteException.class)]]
+[checking GaborClustering.GaborCluster]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/Throwable.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/AutoCloseable.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/util/HashSet.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/util/Collection.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/util/AbstractSet.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/util/AbstractCollection.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/Iterable.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/Exception.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/Class.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/MWCtfExtractLocation.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/io/File.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/MWCtfDirectorySource.class)]]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/MWCtfSource.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/util/Arrays.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/Error.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/lang/RuntimeException.class)]]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/util/Iterator.class)]]
+[wrote RegularFileObject[/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/classes/GaborClustering/GaborCluster.class]]
+[checking GaborClustering.GaborClusteringMCRFactory]
+[loading ZipFileIndexFileObject[/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar(com/mathworks/toolbox/javabuilder/MWCtfClassLoaderSource.class)]]
+[wrote RegularFileObject[/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/classes/GaborClustering/GaborClusteringMCRFactory.class]]
+[checking GaborClustering.GaborClusterRemote]
+[loading ZipFileIndexFileObject[/usr/lib/jvm/java-7-openjdk-amd64/lib/ct.sym(META-INF/sym/rt.jar/java/io/IOException.class)]]
+[wrote RegularFileObject[/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/classes/GaborClustering/GaborClusterRemote.class]]
+[total 595ms]
+Executing command: javac -J-Xmx196M -verbose -classpath "/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar" -d "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/classes" "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering/GaborCluster.java" "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering/GaborClusteringMCRFactory.java" "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering/GaborClusterRemote.java" "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering/package-info.java"Executing command: jar -vcf "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/GaborClustering.jar" -C "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/classes" .added manifest
+adding: GaborClustering/(in = 0) (out= 0)(stored 0%)
+adding: GaborClustering/GaborClusteringMCRFactory.class(in = 1838) (out= 773)(deflated 57%)
+adding: GaborClustering/GaborClustering.ctf(in = 6561288) (out= 6471447)(deflated 1%)
+adding: GaborClustering/GaborCluster.class(in = 3943) (out= 1642)(deflated 58%)
+adding: GaborClustering/GaborClusterRemote.class(in = 356) (out= 240)(deflated 32%)
+Executing command: "javadoc" -d "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html" -sourcepath "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing" -classpath "/usr/local/MATLAB/R2013b/toolbox/javabuilder/jar/javabuilder.jar" GaborClusteringCreating destination directory: "/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/"
+Loading source files for package GaborClustering...
+Constructing Javadoc information...
+Standard Doclet version 1.7.0_65
+Building tree for all the packages and classes...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/GaborClustering/GaborCluster.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/GaborClustering/GaborClusteringMCRFactory.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/GaborClustering/GaborClusterRemote.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/GaborClustering/package-frame.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/GaborClustering/package-summary.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/GaborClustering/package-tree.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/constant-values.html...
+Building index for all the packages and classes...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/overview-tree.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/index-all.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/deprecated-list.html...
+Building index for all classes...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/allclasses-frame.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/allclasses-noframe.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/index.html...
+Generating /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc/html/help-doc.html...
+DEMO Compiler license. 
+  The generated application will expire 30 days from today, 
+  on Fri Nov 21 05:02:37 2014.
+Packaging...
+Creating the bundle...
+Web based installer created at /home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_redistribution/MyAppInstaller_web.install.
+Packaging complete.
+Source '/home/hao/work/DIVADIAGTWeb/A_Course_Experiment_DivadiaWeb/GaborClustering/for_testing/doc' exists but is a directory

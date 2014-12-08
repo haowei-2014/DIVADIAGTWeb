@@ -4,16 +4,14 @@
 
 <head>
     <title>DivaDiaWI</title>
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="mystyle.css">
-    <script src="jquery/js/jquery-1.11.1.js"></script>
-    <script src="bootstrap/dist/js/bootstrap.js"></script>
-    <script type="text/javascript" src="paperjs-v0.9.20/dist/paper-full.js"></script>
-    <script src="angularjs/angular.js"></script>
-    <script src="angularjs/angular-route.js"></script>
-    <script src="angularjs/angular-modal-service.min.js"></script>
-    <script src="angularjs/ui-bootstrap-tpls-0.12.0.js"></script>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/mystyle.css">
+    <script src="lib/jquery/jquery-1.11.1.js"></script>
+    <script src="lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="lib/paperjs/dist/paper-full.min.js"></script>
+    <script src="lib/angular-1.2.27/angular.js"></script>
+    <script src="lib/angular-1.2.27/angular-route.js"></script>
+    <script src="lib/angular-modal-service-master/dst/angular-modal-service.js"></script>   
 </head>
 
 <body>
@@ -21,11 +19,13 @@
         <div ng-view></div>
     </div>
 
-    <script src="utilities.js"></script>  
-    <script src="app.js"></script>
-    <script src="openImageController.js"></script>
-    <script src='gtingController.js'></script>
-    <script src="autoSegSettingController.js"></script>
+    <script src="js/utilities.js"></script>  
+    <script src="js/app.js"></script>
+    <script src="controllers/exportGTController.js"></script>
+    <script src='controllers/gtingController.js'></script>
+    <script src="controllers/autoSegSettingController.js"></script>
+    <script src="controllers/openAboutController.js"></script>
+    <script src="controllers/testModalController.js"></script>
 </body>
 
 </html>

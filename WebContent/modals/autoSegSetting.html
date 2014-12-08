@@ -1,5 +1,5 @@
 <div class="modal fade" id="autoSegSettingModal">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -9,17 +9,22 @@
                 <p>The initial result obtained during the automatic segmentaion is a set of isolated words. We use some rectangles to link them together to form a text line. The width and height of the rectangle depend on the space between the two words. If the space is big, then the width of the rectangle should also big. The height of the rectangle doesn't matter much. It should be adjusted only if the two words are not horizontal.
                 </p>
                 <p>Please enter the following information:</p>
+                       
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <p>Width of the linking rectangle:</p>
-                        <div>
-                            <input type="text" size="5" class="form-control" placeholder="width" ng-model="linkingRectWidth">
+                        <label for="name" class="col-sm-6 control-label">Width of the linking rectangle:</label>
+                        <div class="col-sm-3">
+                            <input type="number" size="5" class="form-control" placeholder="width" ng-model="linkingRectWidth">
+                        </div>
+                        <div class="col-sm-3">
                         </div>
                     </div>
                     <div class="form-group">
-                        <p>Height of the linking rectangle:</p>
-                        <div>
-                            <input type="text" size="5" class="form-control" placeholder="height" ng-model="linkingRectHeight">
+                        <label for="age" class="col-sm-6 control-label">Height of the linking rectangle:</label>
+                        <div class="col-sm-3">
+                            <input type="number" size="5" class="form-control" placeholder="height" ng-model="linkingRectHeight">
+                        </div>
+                        <div class="col-sm-3">
                         </div>
                     </div>
                 </form>
