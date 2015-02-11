@@ -4,21 +4,32 @@ myApp.controller('exportGTController', ['$scope', 'imageName', 'close',
             $scope.emailAddress = "";
             // delete .png
  //           var imgNameWithoutSuffix = imageName.substring(0, imageName.indexOf(".")); 
-            $scope.xmlName = $scope.imageName + "_" + $scope.emailAddress + ".xml";
+            $scope.xmlName = $scope.imageName + $scope.emailAddress + ".xml";          
+            imageName = $scope.imageName;
+            emailAddress = $scope.emailAddress;
+
             $scope.close = function () {
                 close({
                     xmlName: $scope.xmlName,
-                    emailAddress: $scope.emailAddress
+                    emailAddress: emailAddress
                 }, 500); // close, but give 500ms for bootstrap to animate
             };
             
             $scope.changeEmailAddress = function (){
- //               imgNameWithoutSuffix = $scope.imageName.substring(0, $scope.imageName.indexOf(".")); 
-                $scope.xmlName = $scope.imageName + "_" + $scope.emailAddress + ".xml";
+                if (!$scope.emailAddress) {
+                    emailAddress = "";
+                    $scope.xmlName = imageName + ".xml";
+                } else{
+                    emailAddress = "_" + $scope.emailAddress;
+                    $scope.xmlName = imageName + emailAddress + ".xml";
+                }
             };
             
             $scope.changeImageName = function (){
-//                imgNameWithoutSuffix = $scope.imageName.substring(0, $scope.imageName.indexOf(".")); 
-                $scope.xmlName = $scope.imageName + "_" + $scope.emailAddress + ".xml";
+                if (!$scope.imageName)
+                    imageName = "";
+                else
+                    imageName = $scope.imageName;
+                $scope.xmlName = imageName + emailAddress + ".xml";
             }
     }]);

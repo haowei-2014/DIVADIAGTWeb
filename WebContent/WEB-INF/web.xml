@@ -41,4 +41,12 @@
     <servlet-name>MergeServlet</servlet-name>
     <url-pattern>/MergeServletPath</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>EraseServlet</servlet-name>
+    <servlet-class>ch.unifr.EraseServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EraseServlet</servlet-name>
+    <url-pattern>/EraseServletPath</url-pattern>
+  </servlet-mapping>
 </web-app>

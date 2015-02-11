@@ -85,6 +85,29 @@ public class DrawGT {
 		return new Polygon(xNewPoints, yNewPoints, newNumberPoints);
 	}
 	
+	// pick up points of the polygon every interval
+	public static Polygon interpolatePolygon(Polygon polygon) {
+		ArrayList<Point> points = new ArrayList<Point>();
+		int numberPoints = polygon.npoints;
+		for (int i = 0; i < numberPoints; i++) {
+			points.add(new Point(polygon.xpoints[i], polygon.ypoints[i]));
+		}
+
+		int interval = 20; 
+		int newNumberPoints = (numberPoints - 1) / interval + 1; // number of boundary points on the new polygon
+		int[] xNewPoints = new int[(numberPoints - 1) / interval + 1];
+		int[] yNewPoints = new int[(numberPoints - 1) / interval + 1];
+		int newIndex = 0;
+		for (int i = 0; i < numberPoints; i++) {
+			if (i % interval == 0) {
+				xNewPoints[newIndex] = points.get(i).x;
+				yNewPoints[newIndex] = points.get(i).y;
+				newIndex++;
+			}
+		}
+		return new Polygon(xNewPoints, yNewPoints, newNumberPoints);
+	}
+	
 	// This method is to avoid 2 polygons (upper and bottom ones) that intersect. It lifts the intersecting 
 	// vertexes of the upper polygon,
 	// and lowers the intersecting vertexes of the bottom polygon.

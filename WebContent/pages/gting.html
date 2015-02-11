@@ -11,9 +11,6 @@
                         </li>
                         <li><a href="" ng-click="exportGT()">Save GT...</a>
                         </li>
-                        <li class="divider"></li>
-                        <li><a href="">Exit</a>
-                        </li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -143,6 +140,10 @@
     <button id="mergePolygon" type="button" class="btn btn-success autoBtn" ng-click="mergePolygons()">Merge</button>
 </span>
 
+<span title="This button is used to erase the redundant part lying at an endpoint of a text line. Click this button, and click the position to erase the text line.">
+    <button id="erasePolygon" type="button" class="btn btn-success autoBtn" ng-click="erasePolygon()">Erase</button>
+</span>
+
 
 <span id="userGuideSpan"><a href="#userguide" target="_blank" id="userGuide">User Guide</a>&nbsp;&nbsp;&nbsp;</span>
 
@@ -234,11 +235,11 @@
 
 
 </div>
-<span id='imgName'></span>
-<span id='imgHeight'></span>
-<span id='imgWidth'></span>
-<span>The pixel you are clicking is:</span>
-<span id='xyClick'></span>
-<span>Mouse position:</span>
+<span id='imgName'></span>&nbsp;&nbsp;
+<span id='imgHeight'></span>&nbsp;&nbsp;
+<span id='imgWidth'></span>&nbsp;&nbsp;
+<span><b>Clicking position:</b></span>
+<span id='xyClick'></span>&nbsp;&nbsp;
+<span><b>Mouse position:</b></span>
 <span id='mousePosition'></span>
 <div id='xmlFile'></div>
