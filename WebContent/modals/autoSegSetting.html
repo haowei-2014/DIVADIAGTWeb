@@ -3,16 +3,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <!--<h4 class="modal-title">{{title}}</h4>-->
+                <h4 class="modal-title">Set parameters for the automatic segmentation</h4>
             </div>
             <div class="modal-body">
                 <p>The initial result obtained during the automatic segmentaion is a set of isolated words. We use some rectangles to link them together to form a text line. The width and height of the rectangle depend on the space between the two words. If the space is big, then the width of the rectangle should also be big. The height of the rectangle doesn't matter much. It should be adjusted only if the two words are not horizontal.
                 </p>
-                <p>Please enter the following information:</p>
+                <p>Please enter the following information of the linking rectangle:</p>
                        
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="name" class="col-sm-6 control-label">Width of the linking rectangle:</label>
+                        <label for="name" class="col-sm-6 control-label">Width (in pixels):</label>
                         <div class="col-sm-3">
                             <input type="number" size="5" class="form-control" placeholder="width" ng-model="linkingRectWidth">
                         </div>
@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="age" class="col-sm-6 control-label">Height of the linking rectangle:</label>
+                        <label for="age" class="col-sm-6 control-label">Height (in pixels):</label>
                         <div class="col-sm-3">
                             <input type="number" size="5" class="form-control" placeholder="height" ng-model="linkingRectHeight">
                         </div>

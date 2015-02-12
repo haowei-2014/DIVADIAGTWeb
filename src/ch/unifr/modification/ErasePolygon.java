@@ -87,7 +87,7 @@ public class ErasePolygon {
 		ImagePlus imp = new ImagePlus("test", image);
 		ManyBlobs allBlobs = new ManyBlobs(imp); // Extended ArrayList				
 		allBlobs.findConnectedComponents(); // Start the Connected Component
-		allBlobs = allBlobs.filterBlobs(500,1000000000, Blob.GETENCLOSEDAREA); 
+		allBlobs = allBlobs.filterBlobs(50,1000000000, Blob.GETENCLOSEDAREA); 
 		System.out.println("AllBlobs size: " + allBlobs.size());
 		if (allBlobs.size() != 2){
 			System.out.println("allBlobs.size is not equal to 2!");

@@ -75,8 +75,14 @@ public class SplitPolygon {
 		int incrementalWidth = 20;
 		int xRect = xSplit - incrementalWidth/2;
 		int yRect = ySplit - heightRect/2;
+		int countIterations = 0; // sometimes the loop below becomes a dead loop, so we count the iterations. 
+								// If the count exceed a threshold, break the loop
 		// increase the width of the linking rectangle until the polygon is split
 		for (int widthRect = 60; widthRect < 1500; widthRect+=incrementalWidth) {
+			countIterations++;
+			if (countIterations > 300){
+				break;
+			}
 			System.out.println("Splitting rectangle width: " + widthRect);
 			xRect = xRect - incrementalWidth/2;
 			Graphics2D g2d = image.createGraphics();

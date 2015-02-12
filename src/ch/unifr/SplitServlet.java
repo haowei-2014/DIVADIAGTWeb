@@ -58,11 +58,7 @@ public class SplitServlet extends HttpServlet {
 //		System.out.println(employees);		
 		Gson gson = new Gson();
 		MyPoint[] points = gson.fromJson(splitPolygon, MyPoint[].class);
-
-		for (int i = 0; i < points.length; i++){
-			System.out.print(points[i].x + "  ");	
-			System.out.println(points[i].y);	
-		}		
+		
 		HashMap<String, List<int[][]>> resultsSplit = SplitPolygon.getResults(points, xSplit, ySplit);
 	    System.out.println("Text lines extraction is done.");
 	    response.setContentType("application/json");

@@ -2,11 +2,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <!--<h4 class="modal-title">{{title}}</h4>-->
+                <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Save the ground truth</h4>
             </div>
             <div class="modal-body">
-                <p>Please enter the following information:</p>
+                <h5>Please enter the following information:</h5>
                 <form class="form-horizontal" role="form" name="myForm" novalidate>
                     <div class="form-group">
                         <label for="name" class="col-sm-3 control-label">Image name</label>
@@ -18,7 +18,7 @@
                     <div class="form-group">
                         <label for="age" class="col-sm-3 control-label">User Email address:</label>
                         <div class="col-sm-9">
-                            <input type="email" class="form-control" name="email" id="imageURLModal" placeholder="Enter your email address" ng-model="emailAddress" ng-change="changeEmailAddress()" required>
+                            <input type="email" class="form-control" name="email" id="imageURLModal" placeholder="Enter your email address (optional)" ng-model="emailAddress" ng-change="changeEmailAddress()" required>
                             <span style="color:red" ng-show="myForm.email.$dirty && myForm.email.$invalid">
                                 <span ng-show="myForm.email.$error.email">Invalid email address.</span>
                             </span>
@@ -36,6 +36,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>
+                <button type="button" ng-click="cancel()" class="btn">Cancel</button>
             </div>
         </div>
     </div>

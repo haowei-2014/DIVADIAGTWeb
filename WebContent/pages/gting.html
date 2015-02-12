@@ -46,15 +46,18 @@
                         </li>
                         <li id="showPage" ng-click="showPage()"><a href="">Page <span id="showPageGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a>
                         </li>
+                        <li role="presentation" class="divider"></li>
+                        <li id="showAll" ng-click="showAll()"><a href="">All regions<span id="showAllGlyph" class="glyphicon glyphicon-ok" style="float:right;"></span></a>
+                        </li>
                     </ul>
                 </li>
                 <li class="dropdown">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown">Settings</a>
                     <ul class="dropdown-menu" role="menu">
+                        <li id="showSettings" ng-click="setShow()"><a href="">Show</a>
+                        </li>
                         <li id="autoSegSettings" ng-click="setAutoSeg()"><a href="">Segmentation</a>
                         </li>
-                        <!--<li id="autoSplitSettings"><a href="">Split</a></li>
-                        <li id="autoMergeSettings"><a href="">Merge</a></li>-->
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -93,13 +96,13 @@
 </button>
 </span>
 
-<span title="Import ground truth">
+<span title="Read an existing ground truth">
     <button type="button" class="btn btn-primary" ng-click="importGT()">
         <span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
 </button>
 </span>
 
-<span title="Export ground truth ground truth">
+<span title="Save the ground truth">
     <button type="button" class="btn btn-primary" ng-click="exportGT()">
         <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
 </button>
@@ -114,7 +117,7 @@
 
 <input id="myImg" type="file" style="visibility: hidden; display: none" />
 
-<input id="myInput" type="file" style="visibility: hidden; display: none" />
+<input id="myInput" type="file" style="visibility: hidden; display: none" accept=".xml" />
 
 <button type="button" id="showInfoButton" class="btn btn-primary btnTop" ng-click="showImgInfo()" style="visibility: hidden; display: none">Hide Info</button>
 <button type="button" id="testButton" class="btn btn-primary btnTop" ng-click="test()" style="visibility: hidden; display: none">test</button>
@@ -179,7 +182,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" ng-click="openImage()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                <button type="button" class="close" data-dismiss="modal" ng-click="cancelImage()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
                 </button>
                 <h4 class="modal-title">Open an image</h4>
             </div>
@@ -191,13 +194,13 @@
                     </div>
                     <div class="form-group">
                         <label for="exampleInputFile">Or browse from your local computer:</label>
-                        <input type="file" id="myImage">
+                        <input type="file" id="myImage" accept="image/*">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button id="openImageBtn" type="button" class="btn btn-primary" data-dismiss="modal" ng-click="openImage()">Okay</button>
-                <!-- <button type="button" class="btn btn-primary" ng-click="myFunction()">Test</button> -->
+                <button type="button" ng-click="cancelImage()" class="btn" data-dismiss="modal">Cancel</button>
             </div>
         </div>
         <!-- /.modal-content -->
