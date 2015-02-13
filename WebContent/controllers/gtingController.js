@@ -160,6 +160,7 @@
              autoTextline = false;
              autoSplit = false;
              autoTextLineRectangle = null; // save the text block rectangle
+             autoTextLineRectangles = [];
              splitPolygon = [];
              currentSplitPolygon = null;
              autoErase = false;
@@ -376,11 +377,12 @@
                          if (autoTextline) {
                              document.getElementById("canvas").style.cursor = "auto";
                              autoTextLineRectangle = currentDrawPath;
+                             autoTextLineRectangles.push(autoTextLineRectangle);
                              autoTextline = false;
                              // reset the drawing region and shape
                              $scope.drawPolygon();
                              $scope.drawTextLine();
-                             autoExtractTextLines($scope.polygon);
+                             autoExtractTextLines($scope.polygon, autoTextLineRectangle);
                          } else {
                              if (xmlDoc == null)
                                  initDom();
@@ -771,7 +773,12 @@
                      if (layerChildren[i].segments.length > 1 &&
                          layerChildren[i].strokeColor &&
                          layerChildren[i].closed &&
-                         layerChildren[i] != autoTextLineRectangle) {
+                         // The polygon currently being processed is not selected
+                         isNotInautoTextLineRectangles(layerChildren[i], autoTextLineRectangles)  && 
+                         layerChildren[i] != currentSplitPolygon &&
+                         layerChildren[i] != currentErasePolygon &&
+                         layerChildren[i] != currentMergePolygon1 &&
+                         layerChildren[i] != currentMergePolygon2 ) {
                          var currentModifyPtTmp = layerChildren[i].getNearestPoint(event.point);
                          var nearestDistanceTmp = lineDistance(event.point, currentModifyPtTmp);
                          if (nearestDistanceTmp < nearestDistance) {
@@ -1381,8 +1388,6 @@
                  tmpVertexesPolygon = vertexesAuto;
                  tmpDrawPath = currentDrawPathAuto;
              }
-             console.log(tmpDrawPath);
-             console.log(tmpVertexesPolygon);
              var page = xmlDoc.getElementsByTagName("Page")[0];
              newCd = xmlDoc.createElement("Coords");
              for (var i = 0; i < tmpVertexesPolygon.length; i++) {
@@ -2011,7 +2016,7 @@
              }
          }
 
-         function autoExtractTextLines(vertexesRectangle) {
+         function autoExtractTextLines(vertexesRectangle, autoTextLineRectangle) {
              // top, bottom, left, right
              // make two new arrays containing x and y respectively
              var xVertexes = [vertexesRectangle[0].x, vertexesRectangle[1].x,
@@ -2061,8 +2066,26 @@
                      linkingRectWidth: linkingRectWidth,
                      linkingRectHeight: linkingRectHeight
                  },
+                 
+                 
+                 /*type: "POST", // it's easier to read GET request parameters
+                 url: 'http://diufpc59:8080/segmentation/textline/gabor',
+                 dataType: 'json',
+                 contentType: 'application/json',
+                 data: JSON.stringify({
+                     //imageName: imgName,
+                     "url": imageUrl,
+                     "top": top,
+                     "bottom": bottom,
+                     "left": left,
+                     "right": right,
+                     //linkingRectWidth: linkingRectWidth,
+                     //linkingRectHeight: linkingRectHeight
+                 }),*/
+                 
+                 
+
                  success: function(data) {
-                     console.log(data);
                      processResponseJson(data);
                      document.getElementById("autoSegmentComment").innerHTML = "";
                      enableElements($("#splitPolygon"), $("#mergePolygon"), $("#erasePolygon"));

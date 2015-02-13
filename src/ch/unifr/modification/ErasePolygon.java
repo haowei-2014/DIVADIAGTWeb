@@ -60,7 +60,7 @@ public class ErasePolygon {
 		g2d.fillPolygon(newPolygon);
 		
 		try {
-			File file = new File(Step1Projection.filePath + "splitgeneratePolygonImage.png");
+			File file = new File(filePath + "splitgeneratePolygonImage.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();

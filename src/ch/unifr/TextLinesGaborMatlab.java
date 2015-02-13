@@ -4,7 +4,7 @@ import java.io.File;
 import matlabcontrol.*;
 
 public class TextLinesGaborMatlab {
-	public static void textLinesExtraction() throws MatlabConnectionException,
+	public static void textLinesExtraction(String gaborInput, String gaborOutput) throws MatlabConnectionException,
 			MatlabInvocationException {
 		// create proxy
 		MatlabProxyFactoryOptions options = new MatlabProxyFactoryOptions.Builder()
@@ -16,10 +16,9 @@ public class TextLinesGaborMatlab {
 		// call builtin function
 		proxy.eval("disp('hello world')");
 		// call user-defined function (must be on the path)
+		System.out.println("Matlab is reading image: " + gaborInput);
 		proxy.eval("addpath('/home/hao/workspace/DIVADIAWeb2/DIVADIAWI/GaborFilters')");
-		proxy.feval("cvGaborTextureSegmentRun", Step1Projection.filePath
-				+ Step1Projection.gaborInput, Step1Projection.filePath
-				+ Step2Gabor.gaborOutput);
+		proxy.feval("cvGaborTextureSegmentRun", gaborInput, gaborOutput);
 		
 		 /*proxy.feval("cvGaborTextureSegmentRun",
 		 "/home/hao/Eclipse/eclipse/tmpData/_744_313_GaborInput.png",
@@ -33,6 +32,6 @@ public class TextLinesGaborMatlab {
 
 	public static void main(String[] args) throws MatlabConnectionException,
 			MatlabInvocationException {
-		textLinesExtraction();
+		textLinesExtraction("", "");
 	}
 }

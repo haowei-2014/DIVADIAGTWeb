@@ -37,6 +37,7 @@ public class MergePolygons {
 	public static Polygon rightPolygon;
 	public static ArrayList<Polygon> polygonsGT  = new ArrayList<Polygon>();
 	public static HashMap<String, List<int[][]>> results = new HashMap<String, List<int[][]>>();
+	public static String filePath = System.getProperty("user.dir") + File.separator;
 	
 	public static void generatePolygonImage (MyPoint[] myPoints1, MyPoint[] myPoints2){	
 		// Based on the points, construct the two polygons.
@@ -103,7 +104,7 @@ public class MergePolygons {
 		g2d.fillPolygon(newPolygon2);
 		
 		try {
-			File file = new File(Step1Projection.filePath + "mergegeneratePolygonImage.png");
+			File file = new File(filePath + "mergegeneratePolygonImage.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -124,7 +125,7 @@ public class MergePolygons {
 		image = CommonFunctions.drawRectsMerge(image, leftPolygon, rightPolygon, linkingRect);
 		
 		try {
-			File file = new File(Step1Projection.filePath + "mergemergePolygons.png");
+			File file = new File(filePath + "mergemergePolygons.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -149,7 +150,7 @@ public class MergePolygons {
 		g2d.setColor(Color.black);
 		g2d.fillPolygon(pNew);	
 		try {
-			File file = new File(Step1Projection.filePath + "mergegenerateMergedPolygon.png");
+			File file = new File(filePath + "mergegenerateMergedPolygon.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();

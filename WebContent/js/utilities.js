@@ -13,7 +13,7 @@ function lineDistance(point1, point2) {
 }
 
 // check the point p is in between points p1 and p2
-function pointInBetween(p, p1, p2){
+function pointInBetween(p, p1, p2) {
     if (p.x >= p1.x && p.x <= p2.x && p.y >= p1.y && p.y <= p2.y) return true;
     if (p.x >= p2.x && p.x <= p1.x && p.y >= p2.y && p.y <= p1.y) return true;
     if (p.x >= p1.x && p.x <= p2.x && p.y <= p1.y && p.y >= p2.y) return true;
@@ -57,16 +57,24 @@ function pointLineDistance(point1, point2, cursor, widthCanvas) {
 
 function getImageName(str) {
     var searchStr = "/";
-    var startIndex = 0, searchStrLen = searchStr.length;
+    var startIndex = 0,
+        searchStrLen = searchStr.length;
     var index, indices = [];
     while ((index = str.indexOf(searchStr, startIndex)) > -1) {
         indices.push(index);
         startIndex = index + searchStrLen;
     }
     // if the / is the last character, then pop it
-    if (indices[indices.length-1] == str.length-1)
+    if (indices[indices.length - 1] == str.length - 1)
         indices.pop();
     // return the string after the last /
-    return str.substring(indices[indices.length-1]+1);
+    return str.substring(indices[indices.length - 1] + 1);
 }
 
+function isNotInautoTextLineRectangles(a, b) {
+    for (i = 0; i < b.length; i++) {
+        if (a == b[i])
+            return false;
+    }
+    return true;
+}

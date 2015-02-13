@@ -32,6 +32,7 @@ public class SplitPolygon {
 	public static Polygon pNew2;
 	public static ArrayList<Polygon> polygonsGT  = new ArrayList<Polygon>();
 	public static HashMap<String, List<int[][]>> results = new HashMap<String, List<int[][]>>();
+	public static String filePath = System.getProperty("user.dir") + File.separator;
 	
 	public static void generatePolygonImage (MyPoint[] points){		
 		int[] xpoints = new int[points.length];
@@ -59,7 +60,7 @@ public class SplitPolygon {
 		g2d.fillPolygon(newPolygon);
 		
 		try {
-			File file = new File(Step1Projection.filePath + "splitgeneratePolygonImage.png");
+			File file = new File(filePath + "splitgeneratePolygonImage.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -80,7 +81,8 @@ public class SplitPolygon {
 		// increase the width of the linking rectangle until the polygon is split
 		for (int widthRect = 60; widthRect < 1500; widthRect+=incrementalWidth) {
 			countIterations++;
-			if (countIterations > 300){
+			if (countIterations > 100){
+				System.out.println("countIterations: " + countIterations);
 				break;
 			}
 			System.out.println("Splitting rectangle width: " + widthRect);
@@ -100,7 +102,7 @@ public class SplitPolygon {
 //			g2d.fillRect(xSplit-5, ySplit-2, 10, 4);
 			
 			try {
-				File file = new File(Step1Projection.filePath + "splitsplitPolygon.png");
+				File file = new File(filePath + "splitsplitPolygon.png");
 				ImageIO.write(image, "png", file);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -132,12 +134,12 @@ public class SplitPolygon {
 		pNew1 = DrawGT.adjustPolygon(pNew1);
 		pNew2 = DrawGT.adjustPolygon(pNew2);
 		if (pNew1.getBounds().y < pNew2.getBounds().y){	
-			pNew1.translate(0, 2); 
-			pNew2.translate(0, -2); 
+			pNew1.translate(0, 4); 
+			pNew2.translate(0, -4); 
 			DrawGT.separateTwoPolygons(pNew1, pNew2);
 		} else {
-			pNew1.translate(0, -2); 
-			pNew2.translate(0, 2); 
+			pNew1.translate(0, -4); 
+			pNew2.translate(0, 4); 
 			DrawGT.separateTwoPolygons(pNew2, pNew1);
 		}
 		polygonsGT.add(pNew1);
@@ -148,7 +150,7 @@ public class SplitPolygon {
 		g2d.fillPolygon(pNew1);
 		g2d.fillPolygon(pNew2);		
 		try {
-			File file = new File(Step1Projection.filePath + "splitgenerate2NewPolygons.png");
+			File file = new File(filePath + "splitgenerate2NewPolygons.png");
 			ImageIO.write(image, "png", file);
 		} catch (IOException e) {
 			e.printStackTrace();

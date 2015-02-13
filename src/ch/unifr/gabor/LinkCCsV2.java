@@ -16,6 +16,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import ch.unifr.Info;
+import ch.unifr.Step1Projection;
 import ch.unifr.Step2Gabor;
 
 /**
@@ -80,11 +82,11 @@ public class LinkCCsV2 {
     	}
     }
     
-    public LinkCCsV2(String pathName, String originalName) {
+    public LinkCCsV2(String pathName, String originalName, Info info) {
     	this.pathName = pathName;
     	this.originalName = originalName;
-    	LinkCCsV2.linkingRectWidth = Step2Gabor.linkingRectWidth;
-    	LinkCCsV2.linkingRectHeight = Step2Gabor.linkingRectHeight;
+    	LinkCCsV2.linkingRectWidth = info.linkingRectWidth;
+    	LinkCCsV2.linkingRectHeight = info.linkingRectHeight;
     }
 	
 	/** compute the left or right linking rectangle of the CC
@@ -115,7 +117,7 @@ public class LinkCCsV2 {
 	/** This function is to search the blobs leftwards and rightwards within the same line
 	 * @param img
 	 */
-	public void start(BufferedImage img){	
+	public void start(BufferedImage img, Info info){	
 		width = img.getWidth();
 		img = CommonFunctions.convertImage(img);	
 		ImagePlus imp = new ImagePlus("test", img);
@@ -209,7 +211,7 @@ public class LinkCCsV2 {
 			}
 		}
 		try {
-			File file = new File(pathName + "SegLinkCCsV2.png");
+			File file = new File(pathName + info.prefix + "SegLinkCCsV2.png");
 			if (file.exists()) {
 				file.delete();
 			}
@@ -243,7 +245,7 @@ public class LinkCCsV2 {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		LinkCCsV2 linkCCs = new LinkCCsV2("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/", 
+		/*LinkCCsV2 linkCCs = new LinkCCsV2("/home/hao/workspace/DIVADIAWeb2/DIVADIAGTWeb/WorkData/", 
 				"manualTextBlockInput.png");
 		BufferedImage img = null;
 		try {
@@ -252,6 +254,6 @@ public class LinkCCsV2 {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		linkCCs.start(img);
+		linkCCs.start(img);*/
 	}
 }

@@ -21,18 +21,17 @@ import com.google.gson.Gson;
 
 public class Step1Projection {
 	
-	public static HashMap<String, List<int[][]>> results;
-	public static BufferedImage image = null; 
-	public static String filePath = null;
-	public static String gaborInput = null;
+	public HashMap<String, List<int[][]>> results;
+	public BufferedImage image = null; 
+	public String filePath = null;
+	public String gaborInput = null;
+	public String prefix = null;
 	
-	public static void initImage (String imageURL, int top, int left){
-		
-		filePath = System.getProperty("user.dir") + File.separator + "tmpData" + File.separator;
-		gaborInput = "_" + top + "_" + left +"_GaborInput.png";	
-		// delete old data
-		File folderDelete = new File (filePath);
-		CommonFunctions.deleteFolder(folderDelete);
+	public void initImage (Info info){
+		String imageURL = info.imageURL;		
+		filePath = info.filePath;
+		gaborInput = info.gaborInput;
+		prefix = info.prefix;
 		
 		if (imageURL.startsWith("data:image")){
 			imageURL = imageURL.replace("data:image/png;base64,", "");
@@ -88,7 +87,7 @@ public class Step1Projection {
 		return results;
 	}*/
 	
-	public static void cropTextBlock(int top, int bottom, int left, int right){	
+	public void cropTextBlock(int top, int bottom, int left, int right){	
 		BufferedImage textBlock = image.getSubimage(left, top, right-left, bottom-top);
 		try {			
 		    File outputfile = new File(filePath + gaborInput);

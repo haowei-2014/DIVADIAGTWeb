@@ -13,6 +13,9 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import ch.unifr.Info;
+import ch.unifr.Step1Projection;
+
 public class DrawGT {
 	public String pathName;
 	public String fileName;
@@ -158,10 +161,10 @@ public class DrawGT {
 		}
 	}
 
-	public ArrayList<Polygon> start() {
+	public ArrayList<Polygon> start(Info info) {
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File(this.pathName + "SegLinkCCsV2.png"));
+			img = ImageIO.read(new File(this.pathName + info.prefix + "SegLinkCCsV2.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -199,7 +202,7 @@ public class DrawGT {
 	public static void main(String[] args) {
 
 		DrawGT drawGT = new DrawGT("E:\\HisDoc project\\Gabor_filter\\projection\\case1\\");
-		ArrayList<Polygon> polygonsGT = drawGT.start();
+//		ArrayList<Polygon> polygonsGT = drawGT.start();
 		System.out.println("Done!");
 	}
 }

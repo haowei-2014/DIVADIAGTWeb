@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 
 import javax.imageio.ImageIO;
 
+import ch.unifr.Info;
 import ch.unifr.Step1Projection;
 import ch.unifr.Step2Gabor;
 import ij.blob.*;
@@ -31,9 +32,9 @@ import ij.*;
  */
 public class TextLineExtraction {
 
-	public String pathName = Step1Projection.filePath;
-	public String fileName = Step2Gabor.gaborOutput;
-	public static String originalName = Step1Projection.gaborInput;
+	public String pathName;
+	public String fileName;
+	public static String originalName;
 //	public static String originalName = "SaintGall_GaborInput.422.412.png";
 	
 	public LinkedHashMap<String, Rectangle> patches = new LinkedHashMap<String, Rectangle>();
@@ -44,10 +45,10 @@ public class TextLineExtraction {
 	 * @param args
 	 */
 	
-	public ArrayList<Polygon> start (int offsetX, int offsetY){
-		pathName = Step1Projection.filePath;
-		fileName = Step2Gabor.gaborOutput;
-		originalName = Step1Projection.gaborInput;
+	public ArrayList<Polygon> start (int offsetX, int offsetY, Info info){
+		pathName = info.filePath;
+		fileName = info.gaborOutput;
+		originalName = info.gaborInput;
 		BufferedImage img = null;
 		BufferedImage imgOriginal = null;
 		try {
@@ -58,8 +59,8 @@ public class TextLineExtraction {
 		img = CommonFunctions.convertImage(img);	
 		drawCCs(img, imgOriginal);
 		segmentCCs(pathName, img);
-		linkCCs(pathName, originalName, img);
-		polygonsGT = drawGT(pathName);
+		linkCCs(pathName, originalName, img, info);
+		polygonsGT = drawGT(pathName, info);
 		offsetGT (offsetX, offsetY);
 		System.out.println("Done!");
 		return polygonsGT;
@@ -67,7 +68,7 @@ public class TextLineExtraction {
 	
 	public static void main(String[] args) {
 		TextLineExtraction tle = new TextLineExtraction();
-		tle.start(0, 0);
+//		tle.start(0, 0);
 	}
 	
 	private ManyBlobs allBlobs;
@@ -229,15 +230,15 @@ public class TextLineExtraction {
 		}
 	}
 	
-	public void linkCCs(String pathName, String originalName, BufferedImage img){
+	public void linkCCs(String pathName, String originalName, BufferedImage img, Info info){
 //		LinkCCs linkCCs = new LinkCCs(pathName, originalName);
-		LinkCCsV2 linkCCs = new LinkCCsV2(pathName, originalName);
-		linkCCs.start(img);
+		LinkCCsV2 linkCCs = new LinkCCsV2(pathName, originalName, info);
+		linkCCs.start(img, info);
 	}
 	
-	public ArrayList<Polygon> drawGT (String pathName){
+	public ArrayList<Polygon> drawGT (String pathName, Info info){
 		DrawGT drawGT = new DrawGT(pathName);	
-		ArrayList<Polygon> polygonsGT = drawGT.start();
+		ArrayList<Polygon> polygonsGT = drawGT.start(info);
 		return polygonsGT;
 	}
 	
